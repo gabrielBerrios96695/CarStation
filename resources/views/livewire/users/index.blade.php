@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    Usuarios /
+    Gestion de Usuarios
 @endsection
 
 @section('content')
@@ -19,7 +19,7 @@
         </div>
         <div class="card-body">
             <table class="table table-striped table-hover">
-                <thead class="thead-blue">
+                <thead class="thead bg-blue-300">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Nombre</th>

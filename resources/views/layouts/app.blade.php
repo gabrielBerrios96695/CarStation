@@ -63,7 +63,7 @@
                     </button>
                     <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
                         <a class="block px-4 py-2 text-sm hover:bg-gray-200">Perfil</a>
-                        <form method="POST" ">
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left">
                                 Cerrar Sesión
