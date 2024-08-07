@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 
@@ -16,7 +17,19 @@ Route::view('dashboard', 'dashboard')
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+    
 
+
+
+Route::get('/parkings', [ParkingController::class, 'index'])->name('parkings.index');
+Route::get('/parkings/create', [ParkingController::class, 'create'])->name('parkings.create');
+Route::post('/parkings', [ParkingController::class, 'store'])->name('parkings.store');
+Route::get('/parkings/{parking}/edit', [ParkingController::class, 'edit'])->name('parkings.edit');
+Route::put('/parkings/{parking}', [ParkingController::class, 'update'])->name('parkings.update');
+Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy'])->name('parkings.destroy');
+Route::put('/parkings/{parking}/toggle-status', [ParkingController::class, 'toggleStatus'])->name('parkings.toggleStatus');
+
+    
     //Usuarios
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
 Route::get('/users/create', [UserController::class, 'create'])->name('users.create');

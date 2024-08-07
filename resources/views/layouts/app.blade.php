@@ -28,9 +28,9 @@
                             <i class="fas fa-users"></i>
                             <span class="mx-3">Usuarios</span>
                         </a>
-                        <a class="flex items-center mt-4 py-2 px-6" href="">
+                        <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.index') }}">
                             <i class="fas fa-store"></i>
-                            <span class="mx-3">Tiendas</span>
+                            <span class="mx-3">Garajes</span>
                         </a>
             
                         

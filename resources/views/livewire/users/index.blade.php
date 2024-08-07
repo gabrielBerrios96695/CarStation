@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    Gestion de Usuarios
+    Gestión de Usuarios
 @endsection
 
 @section('content')
