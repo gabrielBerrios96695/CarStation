@@ -19,11 +19,13 @@
         </div>
         <div class="card-body">
             <table class="table table-striped table-hover">
-                <thead class="thead bg-blue-300">
+                <thead class="thead-light">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Correo</th>
+                        <th scope="col">Rol</th>
+                        <th scope="col">Estado</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
@@ -34,12 +36,40 @@
                             <td>{{ $user->name }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
-                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-secondary">
-                                    <i class="fas fa-edit"></i> 
+                                @switch($user->role)
+                                    @case(1)
+                                        Administrador
+                                        @break
+                                    @case(2)
+                                        Usuario
+                                        @break
+                                    @case(3)
+                                        Cliente
+                                        @break
+                                    @default
+                                        No definido
+                                @endswitch
+                            </td>
+                            <td>
+                                @if ($user->status == 0)
+                                    <span class="badge badge-secondary">Eliminado</span>
+                                @else
+                                    <span class="badge badge-success">Activo</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-edit"></i> Editar
                                 </a>
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="{{ $user->id }}">
-                                    <i class="fas fa-trash-alt"></i> 
-                                </button>
+                                @if ($user->status != 0)
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-id="{{ $user->id }}">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                @else
+                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#restoreModal" data-id="{{ $user->id }}">
+                                        <i class="fas fa-undo"></i> Restaurar
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -49,7 +79,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal para eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -60,16 +90,40 @@
                 </button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas eliminar este usuario?
+                ¿Estás seguro de que deseas marcar este usuario como eliminado?
             </div>
             <div class="modal-footer">
-                
                 <form id="deleteForm" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                 </form>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para restauración -->
+<div class="modal fade" id="restoreModal" tabindex="-1" aria-labelledby="restoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="restoreModalLabel">Confirmar Restauración</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas restaurar este usuario?
+            </div>
+            <div class="modal-footer">
+                <form id="restoreForm" method="POST" class="d-inline">
+                    @csrf
+                    @method('Post') <!-- Cambiado a PUT -->
+                    <button type="submit" class="btn btn-warning">Restaurar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </form>
             </div>
         </div>
     </div>
@@ -86,6 +140,14 @@
             var action = '{{ route("users.destroy", ":id") }}';
             action = action.replace(':id', userId);
             $('#deleteForm').attr('action', action);
+        });
+
+        $('#restoreModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var userId = button.data('id');
+            var action = '{{ route("users.restore", ":id") }}';
+            action = action.replace(':id', userId);
+            $('#restoreForm').attr('action', action);
         });
     </script>
 @endpush
