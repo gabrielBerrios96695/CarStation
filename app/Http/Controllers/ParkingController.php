@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Parking;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ParkingController extends Controller
 {
+    /**
+     * Mostrar una lista de los estacionamientos.
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $sortField = $request->input('sort_field', 'id');
@@ -18,20 +23,38 @@ class ParkingController extends Controller
         return view('livewire.parkings.index', compact('parkings', 'sortField', 'sortDirection'));
     }
 
+    /**
+     * Mostrar el formulario para crear un nuevo estacionamiento.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         return view('livewire.parkings.create');
     }
 
+    /**
+     * Mostrar el formulario para editar un estacionamiento existente.
+     *
+     * @param Parking $parking
+     * @return \Illuminate\View\View
+     */
     public function edit(Parking $parking)
     {
         return view('livewire.parkings.edit', compact('parking'));
     }
 
+    /**
+     * Actualizar un estacionamiento existente.
+     *
+     * @param Request $request
+     * @param Parking $parking
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, Parking $parking)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' =>'required|string|max:255|regex:/^[\pL\s]+$/u',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'capacity' => 'required|integer|min:0',
@@ -51,17 +74,30 @@ class ParkingController extends Controller
         return redirect()->route('parkings.index')->with('success', 'Estacionamiento actualizado correctamente');
     }
 
+    /**
+     * Eliminar un estacionamiento existente.
+     *
+     * @param Parking $parking
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy(Parking $parking)
     {
-        $parking->update(['status' => 0]);
+        $parking->delete();
 
         return redirect()->route('parkings.index')->with('success', 'Estacionamiento eliminado correctamente');
     }
+   
 
+    /**
+     * Almacenar un nuevo estacionamiento.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'capacity' => 'required|integer|min:0',
@@ -82,6 +118,12 @@ class ParkingController extends Controller
         return redirect()->route('parkings.index')->with('success', 'Estacionamiento creado exitosamente.');
     }
 
+    /**
+     * Alternar el estado de un estacionamiento entre activo e inactivo.
+     *
+     * @param Parking $parking
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function toggleStatus(Parking $parking)
     {
         $parking->status = !$parking->status;

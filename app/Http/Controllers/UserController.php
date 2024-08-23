@@ -54,7 +54,7 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|integer',
         ]);
@@ -77,10 +77,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Cambiar el estado a 0 para marcar como eliminado
-        $user->update(['status' => 0]);
-
-        return redirect()->route('users.index')->with('success', 'Usuario marcado como eliminado correctamente');
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'Usuario eliminado permanentemente.');
     }
 
     /**
@@ -92,7 +90,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);

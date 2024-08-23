@@ -70,6 +70,13 @@
                                         <i class="fas fa-undo"></i> Restaurar
                                     </button>
                                 @endif
+                                <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                        <button type="submit" class="btn btn-sm" style="background-color: black; color: white;">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach

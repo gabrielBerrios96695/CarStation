@@ -11,8 +11,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/password-change', [PasswordChangeController::class, 'updatePassword']);
 });
 
-
-
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::view('/', 'welcome');
@@ -25,8 +23,6 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-
-
 Route::get('/parkings', [ParkingController::class, 'index'])->name('parkings.index');
 Route::get('/parkings/create', [ParkingController::class, 'create'])->name('parkings.create');
 Route::post('/parkings', [ParkingController::class, 'store'])->name('parkings.store');
@@ -34,7 +30,6 @@ Route::get('/parkings/{parking}/edit', [ParkingController::class, 'edit'])->name
 Route::put('/parkings/{parking}', [ParkingController::class, 'update'])->name('parkings.update');
 Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy'])->name('parkings.destroy');
 Route::put('/parkings/{parking}/toggle-status', [ParkingController::class, 'toggleStatus'])->name('parkings.toggleStatus');
-
     
     //Usuarios
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -44,5 +39,5 @@ Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.e
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
-    
+
 require __DIR__.'/auth.php';

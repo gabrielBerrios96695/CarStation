@@ -54,6 +54,13 @@
                                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#toggleStatusModal" data-id="{{ $parking->id }}" data-status="{{ $parking->status }}">
                                     <i class="fas fa-toggle-on"></i> 
                                 </button>
+                                <form action="{{ route('parkings.destroy', $parking->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                        <button type="submit" class="btn btn-sm" style="background-color: black; color: white;">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach
