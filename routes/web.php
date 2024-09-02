@@ -30,6 +30,7 @@ Route::get('/parkings/{parking}/edit', [ParkingController::class, 'edit'])->name
 Route::put('/parkings/{parking}', [ParkingController::class, 'update'])->name('parkings.update');
 Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy'])->name('parkings.destroy');
 Route::put('/parkings/{parking}/toggle-status', [ParkingController::class, 'toggleStatus'])->name('parkings.toggleStatus');
+Route::get('/parkings/export', [ParkingController::class, 'exportToExcel'])->name('parkings.export');
     
     //Usuarios
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -38,6 +39,8 @@ Route::post('/users', [UserController::class, 'store'])->name('users.store');
 Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+Route::put('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
+Route::get('/users/export', [UserController::class, 'exportToExcel'])->name('users.export');
+
 
 require __DIR__.'/auth.php';

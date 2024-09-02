@@ -1,16 +1,21 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    Gestion de Garajes
+    Gestión de Garajes
 @endsection
 
 @section('content')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
         <h1 class="h3">Lista de Estacionamientos</h1>
-        <a href="{{ route('parkings.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Agregar Nuevo Estacionamiento
-        </a>
+        <div>
+            <a href="{{ route('parkings.export') }}" class="btn btn-success mr-2">
+                <i class="fas fa-file-excel"></i> Excel
+            </a>
+            <a href="{{ route('parkings.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Agregar Nuevo Estacionamiento
+            </a>
+        </div>
     </div>
 
     <div class="card">
@@ -21,11 +26,32 @@
             <table class="table table-striped table-hover">
                 <thead class="thead bg-blue-300">
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Nombre</th>
+                        <th scope="col">
+                            <a href="{{ route('parkings.index', ['sort_field' => 'id', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
+                                #
+                                @if($sortField === 'id')
+                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th scope="col">
+                            <a href="{{ route('parkings.index', ['sort_field' => 'name', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
+                                Nombre
+                                @if($sortField === 'name')
+                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th scope="col">Latitud</th>
                         <th scope="col">Longitud</th>
-                        <th scope="col">Capacidad</th>
+                        <th scope="col">
+                            <a href="{{ route('parkings.index', ['sort_field' => 'capacity', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
+                                Capacidad
+                                @if($sortField === 'capacity')
+                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th scope="col">Hora de Apertura</th>
                         <th scope="col">Hora de Cierre</th>
                         <th scope="col">Estado</th>
@@ -49,18 +75,11 @@
                             </td>
                             <td>
                                 <a href="{{ route('parkings.edit', $parking->id) }}" class="btn btn-secondary">
-                                    <i class="fas fa-edit"></i> 
+                                    <i class="fas fa-edit"></i>
                                 </a>
                                 <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#toggleStatusModal" data-id="{{ $parking->id }}" data-status="{{ $parking->status }}">
-                                    <i class="fas fa-toggle-on"></i> 
+                                    <i class="fas fa-toggle-on"></i>
                                 </button>
-                                <form action="{{ route('parkings.destroy', $parking->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                        <button type="submit" class="btn btn-sm" style="background-color: black; color: white;">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                </form>
                             </td>
                         </tr>
                     @endforeach
