@@ -22,6 +22,22 @@ return new class extends Migration
             $table->time('closing_time');
             $table->timestamps();
         });
+        Schema::create('plazas', function (Blueprint $table) {
+            $table->id(); // ID de la plaza
+            $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Relación con la tabla parkings
+            $table->string('code')->unique(); // Código o identificador único para la plaza
+            $table->timestamps();
+        });
+       
+        Schema::create('parking_spaces', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Foreign key to 'parkings'
+            $table->string('space_number'); // Identifier for each parking space
+            $table->tinyInteger('status')->default(1); // 1: Free, 0: Occupied
+            $table->timestamps();
+        });
+        
+
     }
 
     /**

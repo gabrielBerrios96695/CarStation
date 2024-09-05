@@ -228,4 +228,24 @@ class ParkingController extends Controller
 
         return response()->download($temp_file, $fileName)->deleteFileAfterSend(true);
     }
+    public function view(Request $request)
+{
+    // Obtener todos los estacionamientos
+    $parkings = Parking::all();
+
+    // Obtener el ID del parqueo seleccionado, si existe
+    $selectedParkingId = $request->input('parking_id');
+    $selectedParking = null;
+    $plazas = [];
+
+    if ($selectedParkingId) {
+        $selectedParking = Parking::find($selectedParkingId);
+        // Aquí deberías obtener las plazas asociadas al parqueo
+        // Esto es solo un ejemplo, adapta según tu modelo y relaciones
+        $plazas = $selectedParking ? $selectedParking->plazas : [];
+    }
+
+    return view('livewire.parkings.view', compact('parkings', 'selectedParking', 'plazas'));
+}
+
 }
