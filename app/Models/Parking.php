@@ -20,10 +20,11 @@ class Parking extends Model
     ];
     // Dentro de Parking.php
 
-public function plazas()
-{
-    // Asegúrate de ajustar el nombre de la relación y el modelo según tu implementación
-    return $this->hasMany(Plaza::class);
-}
+// app/Models/Parking.php
+    public function plazas()
+    {
+        return $this->hasMany(Plaza::class);
+    }
+
 
 }

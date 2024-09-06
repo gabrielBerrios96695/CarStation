@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    Gestion de Garajes
+    Gestión de Garajes
 @endsection
 
 @section('content')
@@ -49,14 +49,6 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="capacity" class="form-label">Capacidad</label>
-                    <input type="number" id="capacity" name="capacity" class="form-control @error('capacity') is-invalid @enderror" value="{{ old('capacity') }}" required>
-                    @error('capacity')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group mb-3">
                     <label for="opening_time" class="form-label">Hora de Apertura</label>
                     <input type="time" id="opening_time" name="opening_time" class="form-control @error('opening_time') is-invalid @enderror" value="{{ old('opening_time') }}" required>
                     @error('opening_time')
@@ -68,6 +60,14 @@
                     <label for="closing_time" class="form-label">Hora de Cierre</label>
                     <input type="time" id="closing_time" name="closing_time" class="form-control @error('closing_time') is-invalid @enderror" value="{{ old('closing_time') }}" required>
                     @error('closing_time')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="number_of_spaces" class="form-label">Número de Plazas</label>
+                    <input type="number" id="number_of_spaces" name="number_of_spaces" class="form-control @error('number_of_spaces') is-invalid @enderror" value="{{ old('number_of_spaces') }}" required>
+                    @error('number_of_spaces')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

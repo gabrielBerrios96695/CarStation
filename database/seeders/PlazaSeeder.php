@@ -26,7 +26,6 @@ class PlazaSeeder extends Seeder
             for ($i = 1; $i <= $numberOfPlazas; $i++) {
                 DB::table('plazas')->insert([
                     'parking_id' => $parking->id,
-                    'code' => 'PLZ-' . $parking->id . '-' . Str::padLeft($i, 3, '0'), // Código único para la plaza
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

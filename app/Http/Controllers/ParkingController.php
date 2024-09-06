@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Parking;
+use App\Models\Plaza; // Asegúrate de importar el modelo Plaza
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -16,21 +17,21 @@ class ParkingController extends Controller
      * @param Request $request
      * @return \Illuminate\View\View
      */
-    public function index(Request $request)
+    // app/Http/Controllers/ParkingController.php
+    public function index()
     {
-        $sortField = $request->input('sort_field', 'id'); // Campo de ordenamiento, por defecto 'id'
-        $sortDirection = $request->input('sort_direction', 'asc'); // Dirección de ordenamiento, por defecto 'asc'
+        $sortField = request()->get('sort_field', 'id');
+        $sortDirection = request()->get('sort_direction', 'asc');
 
-        // Asegúrate de que solo permita ordenar por estos campos para evitar inyecciones SQL
-        $allowedSorts = ['id', 'name', 'capacity'];
-        if (!in_array($sortField, $allowedSorts)) {
-            $sortField = 'id'; // Valor predeterminado si el campo no está en la lista de permitidos
-        }
+        $parkings = Parking::withCount('plazas') // Carga el conteo de plazas
+            ->orderBy($sortField, $sortDirection)
+            ->get();
 
-        // Obtener los estacionamientos ordenados
-        $parkings = Parking::orderBy($sortField, $sortDirection)->get();
-
-        return view('livewire.parkings.index', compact('parkings', 'sortField', 'sortDirection'));
+        return view('livewire.parkings.index', [
+            'parkings' => $parkings,
+            'sortField' => $sortField,
+            'sortDirection' => $sortDirection,
+        ]);
     }
 
     /**
@@ -51,37 +52,54 @@ class ParkingController extends Controller
      */
     public function edit(Parking $parking)
     {
-        return view('livewire.parkings.edit', compact('parking'));
+        $numberOfSpaces = Plaza::where('parking_id', $parking->id)->count();
+
+        return view('livewire.parkings.edit', [
+            'parking' => $parking,
+            'numberOfSpaces' => $numberOfSpaces
+        ]);
     }
 
-    /**
-     * Actualizar un estacionamiento existente.
-     *
-     * @param Request $request
-     * @param Parking $parking
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request, Parking $parking)
     {
+        // Validar la entrada del formulario
         $request->validate([
-            'name' =>'required|string|max:255|regex:/^[\pL\s]+$/u',
+            'name' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
-            'capacity' => 'required|integer|min:0',
             'opening_time' => 'required|date_format:H:i',
             'closing_time' => 'required|date_format:H:i',
+            'number_of_spaces' => 'required|integer|min:0',
         ]);
 
+        // Actualizar el estacionamiento con los datos del formulario
         $parking->update([
-            'name' => $request->name,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'capacity' => $request->capacity,
-            'opening_time' => $request->opening_time,
-            'closing_time' => $request->closing_time,
+            'name' => $request->input('name'),
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
+            'opening_time' => $request->input('opening_time'),
+            'closing_time' => $request->input('closing_time'),
         ]);
 
-        return redirect()->route('parkings.index')->with('success', 'Estacionamiento actualizado correctamente');
+        // Ajustar la cantidad de plazas
+        $currentNumberOfSpaces = Plaza::where('parking_id', $parking->id)->count();
+        $desiredNumberOfSpaces = $request->input('number_of_spaces');
+
+        if ($desiredNumberOfSpaces > $currentNumberOfSpaces) {
+            // Agregar plazas adicionales
+            for ($i = $currentNumberOfSpaces; $i < $desiredNumberOfSpaces; $i++) {
+                Plaza::create(['parking_id' => $parking->id]);
+            }
+        } elseif ($desiredNumberOfSpaces < $currentNumberOfSpaces) {
+            // Eliminar plazas extras
+            Plaza::where('parking_id', $parking->id)
+                ->orderBy('id', 'desc')
+                ->take($currentNumberOfSpaces - $desiredNumberOfSpaces)
+                ->delete();
+        }
+
+        // Redirigir a la lista de estacionamientos con un mensaje de éxito
+        return redirect()->route('parkings.index')->with('success', 'Estacionamiento actualizado con éxito.');
     }
 
     /**
@@ -94,9 +112,8 @@ class ParkingController extends Controller
     {
         $parking->delete();
 
-        return redirect()->route('parkings.index')->with('success', 'Estacionamiento eliminado correctamente');
+        return redirect()->route('livewire.parkings.index')->with('success', 'Estacionamiento eliminado correctamente');
     }
-   
 
     /**
      * Almacenar un nuevo estacionamiento.
@@ -110,20 +127,30 @@ class ParkingController extends Controller
             'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
-            'capacity' => 'required|integer|min:0',
             'opening_time' => 'required|date_format:H:i',
             'closing_time' => 'required|date_format:H:i',
+            'number_of_spaces' => 'required|integer|min:1', // Añadir validación para el número de plazas
         ]);
 
-        Parking::create([
+        // Crear el parqueo
+        $parking = Parking::create([
             'name' => $request->name,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
-            'capacity' => $request->capacity,
             'status' => 1, // Activo por defecto
             'opening_time' => $request->opening_time,
             'closing_time' => $request->closing_time,
         ]);
+
+        // Crear las plazas asociadas si hay un número especificado
+        $numberOfSpaces = $request->input('number_of_spaces', 0);
+        if ($numberOfSpaces > 0) {
+            for ($i = 0; $i < $numberOfSpaces; $i++) {
+                Plaza::create([
+                    'parking_id' => $parking->id,
+                ]);
+            }
+        }
 
         return redirect()->route('parkings.index')->with('success', 'Estacionamiento creado exitosamente.');
     }
@@ -141,7 +168,6 @@ class ParkingController extends Controller
 
         return redirect()->route('parkings.index')->with('success', 'Estado del estacionamiento actualizado correctamente');
     }
-
     public function exportToExcel()
     {
         $parkings = Parking::all(); // Obtiene todos los estacionamientos

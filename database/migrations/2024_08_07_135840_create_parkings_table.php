@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
-            $table->integer('capacity');
+
             $table->tinyInteger('status')->default(1);
             $table->time('opening_time');
             $table->time('closing_time');
@@ -25,7 +25,7 @@ return new class extends Migration
         Schema::create('plazas', function (Blueprint $table) {
             $table->id(); // ID de la plaza
             $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Relación con la tabla parkings
-            $table->string('code')->unique(); // Código o identificador único para la plaza
+
             $table->timestamps();
         });
        

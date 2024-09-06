@@ -5,6 +5,9 @@
 @endsection
 
 @section('content')
+@php
+use App\Models\Plaza;
+@endphp
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
         <h1 class="h3">Lista de Estacionamientos</h1>
@@ -45,9 +48,9 @@
                         <th scope="col">Latitud</th>
                         <th scope="col">Longitud</th>
                         <th scope="col">
-                            <a href="{{ route('parkings.index', ['sort_field' => 'capacity', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
-                                Capacidad
-                                @if($sortField === 'capacity')
+                            <a href="{{ route('parkings.index', ['sort_field' => 'number_of_spaces', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
+                                Número de Plazas
+                                @if($sortField === 'number_of_spaces')
                                     <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                                 @endif
                             </a>
@@ -65,7 +68,7 @@
                             <td>{{ $parking->name }}</td>
                             <td>{{ $parking->latitude }}</td>
                             <td>{{ $parking->longitude }}</td>
-                            <td>{{ $parking->capacity }}</td>
+                            <td>{{ $parking->plazas_count }}</td>
                             <td>{{ $parking->opening_time }}</td>
                             <td>{{ $parking->closing_time }}</td>
                             <td>

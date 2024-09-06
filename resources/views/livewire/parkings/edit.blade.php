@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('breadcrumbs')
-    Gestion de Garajes
+    Gestión de Garajes
 @endsection
 
 @section('content')
@@ -50,9 +50,9 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="capacity" class="form-label">Capacidad</label>
-                    <input type="number" id="capacity" name="capacity" class="form-control @error('capacity') is-invalid @enderror" value="{{ old('capacity', $parking->capacity) }}" required>
-                    @error('capacity')
+                    <label for="number_of_spaces" class="form-label">Número de Plazas</label>
+                    <input type="number" id="number_of_spaces" name="number_of_spaces" class="form-control @error('number_of_spaces') is-invalid @enderror" value="{{ old('number_of_spaces', $numberOfSpaces) }}" required>
+                    @error('number_of_spaces')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>

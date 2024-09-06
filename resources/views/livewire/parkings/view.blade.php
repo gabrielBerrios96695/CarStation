@@ -26,12 +26,18 @@
     @if ($selectedParking)
         <h2 class="h4 mt-4">Plazas en {{ $selectedParking->name }}</h2>
         <div class="row">
+            @php
+            $cont=1;
+            @endphp
             @foreach ($plazas as $plaza)
                 <div class="col-md-2 mb-3">
                     <div class="p-3 bg-success text-white text-center" style="border-radius: 5px;">
-                        Plaza {{ $plaza->id }}
+                        Plaza {{ $cont}}
                     </div>
                 </div>
+                @php
+            $cont++;
+            @endphp
             @endforeach
         </div>
     @endif
