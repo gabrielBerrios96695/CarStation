@@ -26,6 +26,10 @@ class Parking extends Model
     {
         return $this->hasMany(Plaza::class);
     }
+    public function packages()
+    {
+        return $this->hasMany(Package::class, 'parking_id');
+    }
 
 
 }

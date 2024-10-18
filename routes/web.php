@@ -6,6 +6,33 @@ use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PasswordChangeController;
 
+use App\Http\Controllers\PackagesController;
+use App\Http\Controllers\PurchaseController;
+
+// Agrupando las rutas bajo autenticación
+Route::middleware(['auth'])->group(function () {
+    // Ruta para mostrar la lista de compras
+    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+
+    // Ruta para mostrar el formulario de compra de un paquete específico
+    Route::get('/purchases/create/{package}', [PurchaseController::class, 'create'])->name('purchases.create');
+
+    // Ruta para almacenar la compra de un paquete
+    Route::post('/purchases/{package}', [PurchaseController::class, 'store'])->name('purchases.store');
+});
+
+// Rutas para la gestión de paquetes
+Route::get('/packages', [PackagesController::class, 'index'])->name('packages.index');  // Ver lista de paquetes
+Route::get('/packages/create', [PackagesController::class, 'create'])->name('packages.create');  // Formulario para crear paquete
+Route::post('/packages', [PackagesController::class, 'store'])->name('packages.store');  // Guardar nuevo paquete
+Route::get('/packages/{package}/edit', [PackagesController::class, 'edit'])->name('packages.edit');  // Formulario para editar paquete
+Route::put('/packages/{package}', [PackagesController::class, 'update'])->name('packages.update');  // Actualizar paquete existente
+Route::delete('/packages/{package}', [PackagesController::class, 'destroy'])->name('packages.destroy');  // Eliminar paquete
+
+// Ruta para exportar paquetes en formato Excel
+Route::get('/packages/export', [PackageController::class, 'export'])->name('packages.export');
+
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/password-change', [PasswordChangeController::class, 'showChangeForm'])->name('password.change');
     Route::post('/password-change', [PasswordChangeController::class, 'updatePassword']);

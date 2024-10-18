@@ -86,3 +86,12 @@ body {
     border-radius: 0.25rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.qr-image {
+    width: 150px; /* Cambia el tamaño aquí */
+    height: auto; /* Mantiene la proporción */
+    transition: transform 0.2s; /* Transición suave al hacer hover */
+}
+
+.qr-image:hover {
+    transform: scale(1.1); /* Aumenta un 10% al pasar el mouse */
+}

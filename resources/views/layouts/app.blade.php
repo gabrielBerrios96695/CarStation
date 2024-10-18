@@ -52,6 +52,10 @@
                         <i class="fas fa-store"></i>
                         <span class="mx-3">Plazas</span>
                     </a>
+                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('packages.index') }}">
+                        <i class="fas fa-store"></i>
+                        <span class="mx-3">Paquetes</span>
+                    </a>
                    
                 </nav>
                 <div class="absolute bottom-0 w-full p-4 bg-yellow-300">
