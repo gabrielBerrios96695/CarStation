@@ -15,10 +15,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
 
     // Ruta para mostrar el formulario de compra de un paquete específico
-    Route::get('/purchases/create/{package}', [PurchaseController::class, 'create'])->name('purchases.create');
+    Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
+    // routes/web.php
+Route::post('/purchases/{package}', [PurchaseController::class, 'store'])->name('purchases.store');
 
-    // Ruta para almacenar la compra de un paquete
-    Route::post('/purchases/{package}', [PurchaseController::class, 'store'])->name('purchases.store');
+
 });
 
 // Rutas para la gestión de paquetes

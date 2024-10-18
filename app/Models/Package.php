@@ -15,4 +15,8 @@ class Package extends Model
     {
         return $this->belongsTo(Parking::class, 'parking_id'); // Especifica la clave foránea 'parking_id'
     }
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }

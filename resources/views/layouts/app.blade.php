@@ -9,6 +9,11 @@
     @livewireStyles
     <link href="{{ asset('leaflet/leaflet.css') }}" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>   
@@ -55,6 +60,10 @@
                     <a class="flex items-center mt-4 py-2 px-6" href="{{ route('packages.index') }}">
                         <i class="fas fa-store"></i>
                         <span class="mx-3">Paquetes</span>
+                    </a>
+                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('purchases.index') }}">
+                        <i class="fas fa-store"></i>
+                        <span class="mx-3">Ventas</span>
                     </a>
                    
                 </nav>
