@@ -32,6 +32,9 @@ Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy'])->nam
 Route::put('/parkings/{parking}/toggle-status', [ParkingController::class, 'toggleStatus'])->name('parkings.toggleStatus');
 Route::get('/parkings/export', [ParkingController::class, 'exportToExcel'])->name('parkings.export');
 Route::get('/parkings/view', [ParkingController::class, 'view'])->name('parkings.view');
+Route::post('/parkings/reserve', [ParkingController::class, 'reserve'])->name('parkings.reserve');
+Route::post('/reservations/store', [ParkingController::class, 'storeReservation'])->name('reservations.store');
+
 
 
     

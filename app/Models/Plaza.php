@@ -18,7 +18,12 @@ class Plaza extends Model
         'code',
     ];
 
-    // Define la relación con el modelo Parking
+    public function reservations()
+    {
+        return $this->hasMany(PlazaReservation::class);
+    }
+
+    // Relación con el parqueo
     public function parking()
     {
         return $this->belongsTo(Parking::class);

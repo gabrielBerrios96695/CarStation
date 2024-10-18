@@ -14,6 +14,7 @@ class Parking extends Model
         'latitude',
         'longitude',
         'capacity',
+        'user_id',
         'status',
         'opening_time',
         'closing_time',

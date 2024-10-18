@@ -49,14 +49,13 @@ use App\Models\Plaza;
                         <th scope="col">Longitud</th>
                         <th scope="col">
                             <a href="{{ route('parkings.index', ['sort_field' => 'number_of_spaces', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
-                                Número de Plazas
+                                Plazas
                                 @if($sortField === 'number_of_spaces')
                                     <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                                 @endif
                             </a>
                         </th>
-                        <th scope="col">Hora de Apertura</th>
-                        <th scope="col">Hora de Cierre</th>
+                        <th scope="col">Horas de Apertura y Cierre</th>
                         <th scope="col">Estado</th>
                         <th scope="col">Acciones</th>
                     </tr>
@@ -69,8 +68,7 @@ use App\Models\Plaza;
                             <td>{{ $parking->latitude }}</td>
                             <td>{{ $parking->longitude }}</td>
                             <td>{{ $parking->plazas_count }}</td>
-                            <td>{{ $parking->opening_time }}</td>
-                            <td>{{ $parking->closing_time }}</td>
+                            <td>{{ $parking->opening_time }} - {{ $parking->closing_time }}</td>
                             <td>
                                 <span class="badge {{ $parking->status ? 'badge-success' : 'badge-danger' }}">
                                     {{ $parking->status ? 'Activo' : 'Inactivo' }}

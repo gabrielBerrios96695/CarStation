@@ -16,12 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('latitude', 10, 7);
             $table->decimal('longitude', 10, 7);
-
+            $table->unsignedBigInteger('user_id'); // Dueño del parqueo (usuario con rol 2)
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->tinyInteger('status')->default(1);
             $table->time('opening_time');
             $table->time('closing_time');
             $table->timestamps();
         });
+        
         Schema::create('plazas', function (Blueprint $table) {
             $table->id(); // ID de la plaza
             $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Relación con la tabla parkings
@@ -29,14 +31,16 @@ return new class extends Migration
             $table->timestamps();
         });
        
-        Schema::create('parking_spaces', function (Blueprint $table) {
+        Schema::create('plaza_reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Foreign key to 'parkings'
-            $table->string('space_number'); // Identifier for each parking space
-            $table->tinyInteger('status')->default(1); // 1: Free, 0: Occupied
+            $table->foreignId('plaza_id')->constrained('plazas')->onDelete('cascade');
+            $table->timestamp('start_time'); // Hora de inicio de la reserva
+            $table->timestamp('end_time');   // Hora de fin de la reserva
+            $table->tinyInteger('status')->default(1); // Estado de la reserva (1 = activa, 0 = cancelada)
             $table->timestamps();
         });
         
+ 
 
     }
 
