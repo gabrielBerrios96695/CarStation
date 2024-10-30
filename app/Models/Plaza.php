@@ -18,14 +18,15 @@ class Plaza extends Model
         'code',
     ];
 
-    public function reservations()
-    {
-        return $this->hasMany(PlazaReservation::class);
-    }
+    
 
     // Relación con el parqueo
     public function parking()
     {
         return $this->belongsTo(Parking::class);
+    }
+    public function reservations()
+    {
+        return $this->hasMany(PlazaReserva::class, 'plaza_id'); // Asegúrate de que se refiere a la columna correcta
     }
 }

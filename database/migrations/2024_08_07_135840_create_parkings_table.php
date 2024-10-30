@@ -27,18 +27,20 @@ return new class extends Migration
         Schema::create('plazas', function (Blueprint $table) {
             $table->id(); // ID de la plaza
             $table->foreignId('parking_id')->constrained('parkings')->onDelete('cascade'); // Relación con la tabla parkings
-
+            $table->tinyInteger('status')->default(1); // Estado de la plaza (1 = activa, 0 = inactiva, 2 = deshabilitado)
             $table->timestamps();
         });
        
-        Schema::create('plaza_reservations', function (Blueprint $table) {
+        Schema::create('plaza_reservas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relación con la tabla users
             $table->foreignId('plaza_id')->constrained('plazas')->onDelete('cascade');
-            $table->timestamp('start_time'); // Hora de inicio de la reserva
-            $table->timestamp('end_time');   // Hora de fin de la reserva
-            $table->tinyInteger('status')->default(1); // Estado de la reserva (1 = activa, 0 = cancelada)
+            $table->date('reservation_date');
+            $table->time('start_time');
+            $table->time('end_time');
             $table->timestamps();
         });
+        
         
  
 

@@ -51,6 +51,12 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+    use App\Http\Controllers\ReservaController;
+
+// Otras rutas
+
+Route::post('/reservas', [ReservaController::class, 'store'])->name('reservas.store');
+
 Route::get('/parkings', [ParkingController::class, 'index'])->name('parkings.index');
 Route::get('/parkings/create', [ParkingController::class, 'create'])->name('parkings.create');
 Route::post('/parkings', [ParkingController::class, 'store'])->name('parkings.store');
@@ -59,10 +65,21 @@ Route::put('/parkings/{parking}', [ParkingController::class, 'update'])->name('p
 Route::delete('/parkings/{parking}', [ParkingController::class, 'destroy'])->name('parkings.destroy');
 Route::put('/parkings/{parking}/toggle-status', [ParkingController::class, 'toggleStatus'])->name('parkings.toggleStatus');
 Route::get('/parkings/export', [ParkingController::class, 'exportToExcel'])->name('parkings.export');
-Route::get('/parkings/view', [ParkingController::class, 'view'])->name('parkings.view');
+Route::get('/parkings/view/{id}', [ParkingController::class, 'view'])->name('parkings.view');
+Route::get('/parkings/maps', [ParkingController::class, 'maps'])->name('parkings.maps');
 Route::post('/parkings/reserve', [ParkingController::class, 'reserve'])->name('parkings.reserve');
+Route::get('parkings/{id}', [ParkingController::class, 'view'])->name('parkings.view');
+Route::get('reservas/hours-available', [ParkingController::class, 'availableHours'])->name('reservas.availableHours');
+Route::post('reservas', [ParkingController::class, 'storeReservation'])->name('reservas.store');
+Route::post('/reservar/{plaza_id}', [ReservationController::class, 'store'])->name('reservar');
+
 Route::post('/reservations/store', [ParkingController::class, 'storeReservation'])->name('reservations.store');
 
+use App\Http\Controllers\ReservationController;
+
+Route::post('/reservar', [ReservationController::class, 'store'])->name('reservar');
+Route::get('/reservas', [ReservationController::class, 'index'])->name('reservas.index');
+Route::delete('/reservas/{id}', [ReservationController::class, 'destroy'])->name('reservas.destroy');
 
 
     

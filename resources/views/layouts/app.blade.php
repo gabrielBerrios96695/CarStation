@@ -11,6 +11,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS y dependencias -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -41,30 +49,36 @@
                     <img src="{{ asset('imagenes/logo.jpeg') }}" alt="Logo" class="h-16 w-auto">
                 </div>
                 <nav class="mt-10">
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span class="mx-3">Dashboard</span>
-                    </a>
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('users.index') }}">
-                        <i class="fas fa-users"></i>
-                        <span class="mx-3">Usuarios</span>
-                    </a>
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.index') }}">
-                        <i class="fas fa-store"></i>
-                        <span class="mx-3">Garajes</span>
-                    </a>
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.view') }}">
-                        <i class="fas fa-store"></i>
-                        <span class="mx-3">Plazas</span>
-                    </a>
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('packages.index') }}">
-                        <i class="fas fa-store"></i>
-                        <span class="mx-3">Paquetes</span>
-                    </a>
-                    <a class="flex items-center mt-4 py-2 px-6" href="{{ route('purchases.index') }}">
-                        <i class="fas fa-store"></i>
-                        <span class="mx-3">Ventas</span>
-                    </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="mx-3">Dashboard</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('users.index') }}">
+                    <i class="fas fa-users-cog"></i> <!-- Cambiado a usuarios con engranaje -->
+                    <span class="mx-3">Usuarios</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.index') }}">
+                    <i class="fas fa-parking"></i> <!-- Cambiado a icono de parking -->
+                    <span class="mx-3">Garajes</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.maps') }}">
+                    <i class="fas fa-map-marker-alt"></i> <!-- Cambiado a icono de marcador en mapa -->
+                    <span class="mx-3">Buscar Garaje</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('packages.index') }}">
+                    <i class="fas fa-box"></i> <!-- Cambiado a icono de paquete -->
+                    <span class="mx-3">Paquetes</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reservas.index') }}">
+                    <i class="fas fa-parking"></i> <!-- Icono de parqueo -->
+                    <span class="mx-3">Reservas</span>
+                </a>
+
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('purchases.index') }}">
+                    <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
+                    <span class="mx-3">Ventas</span>
+                </a>
+
                    
                 </nav>
                 <div class="absolute bottom-0 w-full p-4 bg-yellow-300">
@@ -90,7 +104,7 @@
                     </div>
                     <div x-data="{ open: false }" @click.away="open = false" class="relative user-menu">
                         <button @click="open = !open" class="px-4 py-2 text-sm hover:bg-gray-200">
-                            {{ Auth::user()->name }}
+                            Opciones
                         </button>
                         <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
                             <a class="block px-4 py-2 text-sm hover:bg-gray-200">Perfil</a>
@@ -107,6 +121,15 @@
                 <!-- Main Content -->
                 <main class="main-content flex-1 overflow-x-hidden overflow-y-auto">
                     <div class="container mx-auto px-6 py-8">
+                    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @elseif (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
                         @yield('content')
                     </div>
                 </main>

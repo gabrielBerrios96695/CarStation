@@ -21,7 +21,7 @@ class PlazaSeeder extends Seeder
 
         foreach ($parkings as $parking) {
             // Generar una cantidad aleatoria de plazas entre 5 y 15 para cada parking
-            $numberOfPlazas = rand(5, 15);
+            $numberOfPlazas = rand(1, 5);
 
             for ($i = 1; $i <= $numberOfPlazas; $i++) {
                 DB::table('plazas')->insert([
