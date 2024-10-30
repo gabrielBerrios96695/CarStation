@@ -92,6 +92,12 @@ Route::put('/users/{user}', [UserController::class, 'update'])->name('users.upda
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 Route::put('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
 Route::get('/users/export', [UserController::class, 'exportToExcel'])->name('users.export');
+Route::get('/users/create-admin', [UserController::class, 'createAdmin'])->name('users.createAdmin');
+Route::post('/users/store-admin', [UserController::class, 'storeAdmin'])->name('users.storeAdmin');
 
+use App\Http\Controllers\ReportController;
+
+Route::get('/reports/client-reservations', [ReportController::class, 'clientReservations'])->name('reports.clientReservations');
+Route::get('/reports/export', [ReportController::class, 'exportPdf'])->name('reports.export');
 
 require __DIR__.'/auth.php';

@@ -15,9 +15,13 @@
             <a href="{{ route('users.create') }}" class="btn btn-primary">
                 <i class="fas fa-user-plus"></i> Registrar Nuevo Usuario
             </a>
+            <a href="{{ route('users.createAdmin') }}" class="btn btn-info ml-2">
+                <i class="fas fa-user-shield"></i> Registrar Administrador
+            </a>
         </div>
     </div>
 
+    <!-- Tabla de usuarios -->
     <div class="card">
         <div class="card-header bg-primary text-white">
             <i class="fas fa-users"></i> Usuarios
@@ -67,9 +71,6 @@
         </div>
     </div>
 </div>
-<!-- Modales de eliminación y restauración van aquí -->
-
-
 <!-- Modal para cambiar el estado -->
 <div class="modal fade" id="toggleStatusModal" tabindex="-1" aria-labelledby="toggleStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">

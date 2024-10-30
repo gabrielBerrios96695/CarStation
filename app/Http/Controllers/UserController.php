@@ -114,6 +114,40 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
     }
+    public function createAdmin()
+    {
+        return view('livewire.users.createAdmin'); // Asegúrate de tener esta vista
+    }
+    public function storeAdmin(Request $request)
+{
+    // Validar los campos del formulario
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|string|min:8',
+        'phone_number' => 'nullable|string|max:15',
+        'address' => 'nullable|string|max:255',
+        'ci' => 'nullable|string|max:20',
+    ]);
+
+    // Crear el nuevo usuario con la contraseña hasheada
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password), // Hashear la contraseña
+        'phone_number' => $request->phone_number,
+        'address' => $request->address,
+        'ci' => $request->ci,
+        'role' => 1, // Rol de administrador
+        'status' => 1 // Usuario activo
+    ]);
+
+    // Redirigir a la lista de usuarios con un mensaje de éxito
+    return redirect()->route('users.index')->with('success', 'Administrador registrado exitosamente.');
+}
+
+
+
     
     public function toggleStatus($id)
     {

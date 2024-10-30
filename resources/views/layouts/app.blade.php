@@ -78,15 +78,15 @@
                     <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
                     <span class="mx-3">Ventas</span>
                 </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations') }}">
+                    <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
+                    <span class="mx-3">Reporte de Reservas</span>
+                </a>
+
 
                    
                 </nav>
-                <div class="absolute bottom-0 w-full p-4 bg-yellow-300">
-                    <div class="flex items-center">
-                        <i class="fas fa-user-circle"></i>
-                        <span class="mx-3">{{ Auth::user()->name }}</span>
-                    </div>
-                </div>
+                
             </div>
 
             <div class="flex-1 flex flex-col overflow-hidden">
