@@ -31,7 +31,7 @@
                         <th scope="col">Nombre del Paquete</th>
                         <th scope="col">Qr</th>
                         <th scope="col">Precio</th>
-                        <th scope="col">Tokens</th>
+                        <th scope="col">Horas</th> <!-- Cambiado de Tokens a Horas -->
                         <th scope="col">Estacionamiento</th>
                         <th scope="col">Acciones</th>
                     </tr>
@@ -45,7 +45,7 @@
                                 <img src="{{ asset('storage/qr_codes/' . $package->qr_code) }}" alt="QR Code" class="qr-image">
                             </td>
                             <td>{{ number_format($package->price, 2) }}Bs</td>
-                            <td>{{ $package->tokens ?? 'N/A' }}</td>
+                            <td>{{ $package->hours ?? 'N/A' }}</td> <!-- Cambiado de tokens a hours -->
                             <td>{{ $package->parking->name }}</td>
                             <td>
                                 <!-- Botón para editar el paquete -->

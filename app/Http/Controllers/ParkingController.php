@@ -6,7 +6,7 @@ use App\Models\Parking;
 use App\Models\Plaza; 
 use App\Models\PlazaHour;
 use App\Models\PlazaReserva;
-
+use App\Models\Purchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -24,20 +24,37 @@ class ParkingController extends Controller
      */
     // app/Http/Controllers/ParkingController.php
     public function index()
-    {
-        $sortField = request()->get('sort_field', 'id');
-        $sortDirection = request()->get('sort_direction', 'asc');
+{
+    $sortField = request()->get('sort_field', 'id');
+    $sortDirection = request()->get('sort_direction', 'asc');
 
-        $parkings = Parking::withCount('plazas') // Carga el conteo de plazas
-            ->orderBy($sortField, $sortDirection)
-            ->get();
+    // Obtener el usuario autenticado
+    $user = auth()->user();
+    $parkingsQuery = Parking::withCount(['plazas' => function ($query) {
+        $query->where('status', 1); // Solo contar plazas con status igual a 1
+    }]);
 
-        return view('livewire.parkings.index', [
-            'parkings' => $parkings,
-            'sortField' => $sortField,
-            'sortDirection' => $sortDirection,
-        ]);
+    if ($user->role == 1) { 
+        // Si el usuario es administrador, mostrar todos los parqueos
+        $parkings = $parkingsQuery->orderBy($sortField, $sortDirection)->get();
+    } elseif ($user->role == 2) {
+        // Si el usuario es vendedor, mostrar solo sus parqueos
+        $parkings = $parkingsQuery->where('user_id', $user->id)
+                                  ->orderBy($sortField, $sortDirection)
+                                  ->get();
+    } else {
+        // Si el usuario tiene otro rol, devolver un array vacío o manejarlo como prefieras
+        $parkings = collect();
     }
+
+    return view('livewire.parkings.index', [
+        'parkings' => $parkings,
+        'sortField' => $sortField,
+        'sortDirection' => $sortDirection,
+    ]);
+}
+
+
 
    
     public function create()
@@ -66,46 +83,57 @@ class ParkingController extends Controller
     }
 
     public function update(Request $request, Parking $parking)
-    {
-        // Validar la entrada del formulario
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'opening_time' => 'required|date_format:H:i',
-            'closing_time' => 'required|date_format:H:i',
-            'number_of_spaces' => 'required|integer|min:0',
-        ]);
+{
+    // Validar la entrada del formulario
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'latitude' => 'required|numeric',
+        'longitude' => 'required|numeric',
+        'opening_time' => 'required|date_format:H:i',
+        'closing_time' => 'required|date_format:H:i',
+        'number_of_spaces' => 'required|integer|min:0',
+    ]);
 
-        // Actualizar el estacionamiento con los datos del formulario
-        $parking->update([
-            'name' => $request->input('name'),
-            'latitude' => $request->input('latitude'),
-            'longitude' => $request->input('longitude'),
-            'opening_time' => $request->input('opening_time'),
-            'closing_time' => $request->input('closing_time'),
-        ]);
+    // Actualizar el estacionamiento con los datos del formulario
+    $parking->update([
+        'name' => $request->input('name'),
+        'latitude' => $request->input('latitude'),
+        'longitude' => $request->input('longitude'),
+        'opening_time' => $request->input('opening_time'),
+        'closing_time' => $request->input('closing_time'),
+    ]);
 
-        // Ajustar la cantidad de plazas
-        $currentNumberOfSpaces = Plaza::where('parking_id', $parking->id)->count();
-        $desiredNumberOfSpaces = $request->input('number_of_spaces');
+    // Ajustar la cantidad de plazas
+    $currentNumberOfSpaces = Plaza::where('parking_id', $parking->id)->count();
+    $desiredNumberOfSpaces = $request->input('number_of_spaces');
 
-        if ($desiredNumberOfSpaces > $currentNumberOfSpaces) {
-            // Agregar plazas adicionales
-            for ($i = $currentNumberOfSpaces; $i < $desiredNumberOfSpaces; $i++) {
-                Plaza::create(['parking_id' => $parking->id]);
-            }
-        } elseif ($desiredNumberOfSpaces < $currentNumberOfSpaces) {
-            // Eliminar plazas extras
-            Plaza::where('parking_id', $parking->id)
-                ->orderBy('id', 'desc')
-                ->take($currentNumberOfSpaces - $desiredNumberOfSpaces)
-                ->delete();
+    // Habilitar plazas deshabilitadas antes de agregar nuevas
+    $disabledPlazas = Plaza::where('parking_id', $parking->id)
+                            ->where('status', 0) // Plazas deshabilitadas
+                            ->limit($desiredNumberOfSpaces - $currentNumberOfSpaces)
+                            ->update(['status' => 1]); // Habilitar plazas
+
+    // Volver a contar las plazas después de habilitar
+    $currentNumberOfSpaces = Plaza::where('parking_id', $parking->id)->count();
+
+    if ($desiredNumberOfSpaces > $currentNumberOfSpaces) {
+        // Agregar plazas adicionales
+        for ($i = $currentNumberOfSpaces; $i < $desiredNumberOfSpaces; $i++) {
+            Plaza::create(['parking_id' => $parking->id]);
         }
-
-        // Redirigir a la lista de estacionamientos con un mensaje de éxito
-        return redirect()->route('parkings.index')->with('success', 'Estacionamiento actualizado con éxito.');
+    } elseif ($desiredNumberOfSpaces < $currentNumberOfSpaces) {
+        // Cambiar el estado de las plazas extras a 0
+        Plaza::where('parking_id', $parking->id)
+            ->orderBy('id', 'desc')
+            ->take($currentNumberOfSpaces - $desiredNumberOfSpaces)
+            ->update(['status' => 0]); // Actualiza el estado a 0 en lugar de eliminar
     }
+
+    // Redirigir a la lista de estacionamientos con un mensaje de éxito
+    return redirect()->route('parkings.index')->with('success', 'Estacionamiento actualizado con éxito.');
+}
+
+
 
     /**
      * Eliminar un estacionamiento existente.
@@ -256,9 +284,22 @@ class ParkingController extends Controller
     
     public function view($id, Request $request)
 {
+    // Obtener el parqueo por ID
     $parking = Parking::findOrFail($id);
+    // Obtener la fecha de reserva, usando la fecha actual como predeterminada
     $reservationDate = $request->input('reservation_date', date('Y-m-d'));
 
+    // Obtener el usuario autenticado
+    $user = auth()->user();
+
+    // Obtener las compras realizadas por el usuario autenticado que correspondan al parqueo seleccionado
+    $purchasedPackages = Purchase::where('user_id', $user->id)
+        ->whereHas('package', function ($query) use ($parking) {
+            $query->where('parking_id', $parking->id); // Filtrar por el ID del parqueo
+        })
+        ->get();
+
+    // Obtener las plazas disponibles para el parqueo seleccionado
     $plazas = Plaza::where('parking_id', $id)
         ->where('status', 1)
         ->with(['reservations' => function ($query) use ($reservationDate) {
@@ -266,31 +307,31 @@ class ParkingController extends Controller
         }])
         ->get();
 
+    // Inicializar el array para almacenar horas disponibles por plaza
     $available_hours_by_plaza = [];
 
+    // Calcular horas disponibles para cada plaza
     foreach ($plazas as $plaza) {
-        $hours = [];
-        for ($i = 0; $i < 24; $i++) {
-            $hours[$i] = sprintf('%02d:00', $i);
-        }
+        $availableHours = array_map(fn($hour) => sprintf('%02d:00', $hour), range(0, 23));
 
         foreach ($plaza->reservations as $reservation) {
             $startHour = (int) date('H', strtotime($reservation->start_time));
             $endHour = (int) date('H', strtotime($reservation->end_time));
 
+            // Desmarcar las horas ocupadas
             for ($hour = $startHour; $hour <= $endHour; $hour++) {
-                unset($hours[$hour]);
+                unset($availableHours[$hour]);
             }
         }
 
-        $available_hours_by_plaza[$plaza->id] = array_values($hours);
+        // Almacenar las horas disponibles para la plaza actual
+        $available_hours_by_plaza[$plaza->id] = array_values($availableHours);
     }
 
-    // Utiliza dd() para verificar el contenido de available_hours_by_plaza
-    //dd($available_hours_by_plaza);
-
-    return view('livewire.parkings.view', compact('parking', 'plazas', 'available_hours_by_plaza', 'reservationDate'));
+    return view('livewire.parkings.view', compact('parking', 'plazas', 'available_hours_by_plaza', 'reservationDate', 'purchasedPackages'));
 }
+
+
 
 
 

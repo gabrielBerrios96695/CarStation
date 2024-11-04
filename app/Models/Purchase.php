@@ -9,7 +9,7 @@ class Purchase extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'package_id', 'amount', 'description', 'status'];
+    protected $fillable = ['user_id', 'package_id', 'amount', 'hours','description', 'status'];
 
     // Relación con el modelo User
     public function user()
@@ -22,5 +22,7 @@ class Purchase extends Model
     {
         return $this->belongsTo(Package::class);
     }
+
+
 }
 

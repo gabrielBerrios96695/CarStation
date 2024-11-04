@@ -35,6 +35,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Relación con la tabla users
             $table->foreignId('plaza_id')->constrained('plazas')->onDelete('cascade');
+            $table->tinyInteger('status')->default(1);
             $table->date('reservation_date');
             $table->time('start_time');
             $table->time('end_time');

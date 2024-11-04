@@ -27,6 +27,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Nombre del Comprador</th>
                         <th scope="col">Paquete Comprado</th>
+                        <th scope="col">Horas</th>
                         <th scope="col">Estado</th>
                         <th scope="col">Monto</th>
                         <th scope="col">Acciones</th>
@@ -38,6 +39,7 @@
                             <th scope="row">{{ $purchase->id }}</th>
                             <td>{{ $purchase->user->name }}</td>
                             <td>{{ $purchase->package->name }}</td>
+                            <td>{{ $purchase->package->hours }}</td>
                             <td>
                                 <span class="badge {{ $purchase->status == 1 ? 'badge-warning' : ($purchase->status == 2 ? 'badge-success' : 'badge-danger') }}">
                                     {{ $purchase->status == 1 ? 'Pendiente' : ($purchase->status == 2 ? 'Completa' : 'Cancelada') }}

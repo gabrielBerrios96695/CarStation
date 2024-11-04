@@ -50,6 +50,18 @@
                             <form action="{{ route('reservar', ['plaza_id' => $plaza->id]) }}" method="POST" id="form{{ $plaza->id }}">
                                 @csrf
                                 <input type="hidden" name="reservation_date" value="{{ $reservationDate }}">
+                                
+                                <!-- Desplegable para seleccionar el paquete comprado -->
+                                <div class="form-group">
+                                    <label for="package_id">Selecciona un Paquete:</label>
+                                    <select name="package_id" id="package_id{{ $plaza->id }}" class="form-control">
+                                        <option value="">Seleccione...</option>
+                                        @foreach($purchasedPackages as $purchase)
+                                            <option value="{{ $purchase->package->id }}">{{ $purchase->package->name }} - {{ $purchase->hours }} horas</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="start_time">Hora de Inicio:</label>
                                     <select name="start_time" id="start_time{{ $plaza->id }}" class="form-control">
@@ -99,17 +111,22 @@
 
                     submitButton.disabled = true;
                     endHourSelect.addEventListener('change', function() {
-                        submitButton.disabled = this.value === '';
+                        submitButton.disabled = this.value === '' || document.getElementById('package_id' + {{ $plaza->id }}).value === '';
                     });
+                });
+
+                document.getElementById('package_id{{ $plaza->id }}').addEventListener('change', function() {
+                    document.getElementById('submit{{ $plaza->id }}').disabled = this.value === '' || document.getElementById('end_time{{ $plaza->id }}').value === '';
                 });
 
                 function validateForm(plazaId) {
                     let startHour = document.getElementById('start_time' + plazaId).value;
                     let endHour = document.getElementById('end_time' + plazaId).value;
+                    let packageId = document.getElementById('package_id' + plazaId).value;
                     let errorMessage = document.getElementById('error-message-' + plazaId);
 
-                    if (startHour === '' || endHour === '') {
-                        errorMessage.innerHTML = 'Seleccione tanto la hora de inicio como la de fin.';
+                    if (startHour === '' || endHour === '' || packageId === '') {
+                        errorMessage.innerHTML = 'Seleccione tanto la hora de inicio como la de fin y el paquete.';
                         return false;
                     }
 

@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('tokens')->nullable();
+            $table->integer('hours');
             $table->decimal('price', 10, 2);
             $table->string('qr_code')->nullable();
-            $table->unsignedBigInteger('parking_id'); // Relación con el parqueo
+            $table->unsignedBigInteger('parking_id'); 
+            $table->tinyInteger('status')->default(1);
             $table->foreign('parking_id')->references('id')->on('parkings')->onDelete('cascade');
             $table->unsignedBigInteger('created_by'); // Usuario (rol 2) que crea el paquete
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');

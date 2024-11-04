@@ -8,7 +8,7 @@ class Package extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'qr_code', 'tokens', 'price', 'parking_id', 'created_by'];
+    protected $fillable = ['name', 'qr_code', 'hours','status' ,'price', 'parking_id', 'created_by'];
 
     // Relación con el modelo Parking
     public function parking()

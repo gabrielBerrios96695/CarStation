@@ -56,6 +56,7 @@
                                 <img src="{{ asset('storage/qr_codes/' . $package->qr_code) }}" class="img-fluid mb-3" alt="QR Code">
                                 <p><strong>Tokens:</strong> {{ $package->tokens }}</p>
                                 <p><strong>Monto:</strong> ${{ number_format($package->price, 2) }}</p>
+                                <p><strong>Horas Compradas:</strong> {{ $package->hours }} horas</p> <!-- Mostrar horas compradas -->
                             </div>
                             
                             <div class="mb-3">
@@ -71,6 +72,7 @@
                                 <input type="hidden" name="user_id" id="selectedUserId{{ $package->id }}" value="">
                                 <input type="hidden" name="amount" value="{{ $package->price }}">
                                 <input type="hidden" name="description" id="paymentDescription{{ $package->id }}" value="">
+                                <input type="hidden" name="hours" id="purchasedHours{{ $package->id }}" value="{{ $package->hours }}"> <!-- Campo oculto para horas compradas -->
                             </form>
                         </div>
                         <div class="modal-footer">

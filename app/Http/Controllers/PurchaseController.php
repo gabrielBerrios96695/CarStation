@@ -28,11 +28,13 @@ class PurchaseController extends Controller
 
     public function store(Request $request, $packageId)
 {
-    // Definición de reglas de validación
+
+
     $rules = [
         'user_id' => 'required|integer|exists:users,id',
         'amount' => 'required|numeric|min:0', // Asegúrate de que el monto sea positivo
         'description' => 'required|string|in:Efectivo,QR', // Métodos de pago permitidos
+        'hours' => 'required|integer|min:1', // Validación para las horas
     ];
 
     // Mensajes de error personalizados
@@ -44,6 +46,9 @@ class PurchaseController extends Controller
         'amount.min' => 'El monto debe ser mayor que cero.',
         'description.required' => 'El campo método de pago es obligatorio.',
         'description.in' => 'El método de pago debe ser "Efectivo" o "QR".',
+        'hours.required' => 'El campo horas es obligatorio.',
+        'hours.integer' => 'El campo horas debe ser un número entero.',
+        'hours.min' => 'El número de horas debe ser al menos 1.',
     ];
 
     // Validar los datos de entrada
@@ -56,6 +61,7 @@ class PurchaseController extends Controller
         $purchase->package_id = $packageId; // Asegúrate de que este ID sea válido
         $purchase->amount = $validatedData['amount'];
         $purchase->description = $validatedData['description'];
+        $purchase->hours = $request->input('hours'); // Asigna las horas compradas
         $purchase->save();
 
         return redirect()->route('purchases.index')->with('success', 'Compra registrada correctamente.');
@@ -64,6 +70,7 @@ class PurchaseController extends Controller
         return back()->withErrors(['error' => 'Ocurrió un error al procesar la compra: ' . $e->getMessage()]);
     }
 }
+
 
 
 }

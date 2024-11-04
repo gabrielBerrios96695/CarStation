@@ -49,9 +49,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tokens">Tokens</label>
-                    <input type="number" name="tokens" id="tokens" class="form-control @error('tokens') is-invalid @enderror" value="{{ old('tokens') }}">
-                    @error('tokens')
+                    <label for="hours">Horas</label> <!-- Cambiado de Tokens a Horas -->
+                    <input type="number" name="hours" id="hours" class="form-control @error('hours') is-invalid @enderror" value="{{ old('hours') }}">
+                    @error('hours')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
