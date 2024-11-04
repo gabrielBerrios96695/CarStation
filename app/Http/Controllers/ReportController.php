@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
+
     public function clientReservations(Request $request)
     {
         $query = PlazaReserva::with(['user', 'plaza.parking']);
@@ -57,4 +58,26 @@ class ReportController extends Controller
         // Descargar el PDF con un nombre específico
         return $pdf->download('reporte_reservas.pdf');
     }
+public function clientReservations2(Request $request)
+{
+    // Validar las fechas de inicio y fin
+    $request->validate([
+        'start_month' => 'required|date_format:Y-m',
+        'end_month' => 'required|date_format:Y-m|after_or_equal:start_month',
+    ]);
+
+    // Convertir las fechas en formato Carbon
+    $startDate = Carbon::createFromFormat('Y-m', $request->start_month)->startOfMonth();
+    $endDate = Carbon::createFromFormat('Y-m', $request->end_month)->endOfMonth();
+
+    // Obtener los usuarios con la cantidad de reservas en el rango de fechas
+    $frequentUsers = User::withCount(['reservas' => function ($query) use ($startDate, $endDate) {
+        $query->whereBetween('reservation_date', [$startDate, $endDate]);
+    }])
+    ->orderByDesc('reservas_count') // Ordenar por la cantidad de reservas
+    ->get();
+
+    // Pasar los datos a la vista
+    return view('reports.frecuentes', compact('frequentUsers', 'startDate', 'endDate'));
+}
 }

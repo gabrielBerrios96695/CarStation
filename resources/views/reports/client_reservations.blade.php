@@ -65,7 +65,7 @@
                             <td>{{ $reservation->plaza->parking->name }}</td>
                             <td>{{ $reservation->plaza->id }}</td>
                             <td>{{ $reservation->reservation_date }}</td>
-                            <td>{{ $reservation->start_time }}</td>
+                            <td>{{ $reservation->start_time }}:00</td>
                             <td>{{ $reservation->end_time }}</td>
                         </tr>
                     @endforeach

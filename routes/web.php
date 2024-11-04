@@ -97,7 +97,12 @@ Route::post('/users/store-admin', [UserController::class, 'storeAdmin'])->name('
 
 use App\Http\Controllers\ReportController;
 
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::get('/reports/client-reservations', [ReportController::class, 'clientReservations'])->name('reports.clientReservations');
 Route::get('/reports/export', [ReportController::class, 'exportPdf'])->name('reports.export');
+// Ruta para mostrar el reporte de usuarios frecuentes con filtro por fechas
+Route::get('/reports/frequent-users', [ReportController::class, 'clientReservations2'])->name('reports.clientReservations2');
 
+// Ruta para exportar el reporte de usuarios frecuentes a PDF (puedes modificar el método de exportación según lo necesites)
+Route::get('/reports/frequent-users/export', [ReportController::class, 'exportFrequentUsers'])->name('reports.exportFrequentUsers');
 require __DIR__.'/auth.php';

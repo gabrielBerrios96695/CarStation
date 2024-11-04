@@ -49,6 +49,16 @@
                     <img src="{{ asset('imagenes/logo.jpeg') }}" alt="Logo" class="h-16 w-auto">
                 </div>
                 <nav class="mt-10">
+                @if(auth()->user()->role == 3) 
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="mx-3">Dashboard</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.maps') }}">
+                    <i class="fas fa-map-marker-alt"></i> <!-- Cambiado a icono de marcador en mapa -->
+                    <span class="mx-3">Buscar Garaje</span>
+                </a>
+                @else
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span class="mx-3">Dashboard</span>
@@ -78,11 +88,17 @@
                     <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
                     <span class="mx-3">Ventas</span>
                 </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations2') }}">
+                    <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
+                    <span class="mx-3">Reporte de Reservas</span>
+                </a>
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations') }}">
                     <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
                     <span class="mx-3">Reporte de Reservas</span>
                 </a>
+                
 
+                @endif
 
                    
                 </nav>
