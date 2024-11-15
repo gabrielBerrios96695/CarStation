@@ -43,7 +43,6 @@
                             <th scope="col">Fecha de Reserva</th>
                             <th scope="col">Hora de Inicio</th>
                             <th scope="col">Hora de Fin</th>
-                            <th scope="col">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,11 +54,6 @@
                                 <td>{{ $reservation->reservation_date }}</td>
                                 <td>{{ $reservation->start_time }}:00</td>
                                 <td>{{ $reservation->end_time }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-id="{{ $reservation->id }}">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>

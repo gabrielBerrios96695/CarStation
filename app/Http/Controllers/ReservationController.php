@@ -11,13 +11,16 @@ use App\Models\Plaza;
 class ReservationController extends Controller
 {
     public function index(Request $request)
-    {
-        $parkingId = $request->input('parking_id');
+{
+    $user = auth()->user(); // Obtener el usuario autenticado
+    $parkingId = $request->input('parking_id');
 
-        // Obtener todos los parqueos
-        $parkings = Parking::all();
+    // Obtener todos los parqueos
+    $parkings = Parking::all();
 
-        // Obtener reservas filtradas por parqueo
+    // Verificar el rol del usuario
+    if ($user->role == 1) {
+        // Si el rol es 1, mostrar todas las reservas
         if ($parkingId) {
             $reservations = PlazaReserva::whereHas('plaza', function ($query) use ($parkingId) {
                 $query->where('parking_id', $parkingId);
@@ -25,9 +28,42 @@ class ReservationController extends Controller
         } else {
             $reservations = PlazaReserva::with('plaza', 'user')->get();
         }
+    } elseif ($user->role == 2) {
+        // Si el rol es 2, mostrar solo las reservas de los parqueos registrados a su nombre
+        // Verifica si el usuario tiene parqueos asociados
+        $parkingsForUser = $user->parkings ? $user->parkings->pluck('id') : collect(); // Evitar error si no tiene parqueos
 
-        return view('livewire.reservas.index', compact('reservations', 'parkings'));
+        if ($parkingId) {
+            $reservations = PlazaReserva::whereHas('plaza', function ($query) use ($parkingId, $parkingsForUser) {
+                $query->where('parking_id', $parkingId)->whereIn('plaza_id', $parkingsForUser);
+            })->with('plaza', 'user')->get();
+        } else {
+            $reservations = PlazaReserva::whereIn('plaza_id', $parkingsForUser)
+                ->with('plaza', 'user')
+                ->get();
+        }
+    } elseif ($user->role == 3) {
+        // Si el rol es 3, mostrar solo las reservas realizadas por el usuario
+        if ($parkingId) {
+            $reservations = PlazaReserva::where('user_id', $user->id)
+                ->whereHas('plaza', function ($query) use ($parkingId) {
+                    $query->where('parking_id', $parkingId);
+                })
+                ->with('plaza', 'user')
+                ->get();
+        } else {
+            $reservations = PlazaReserva::where('user_id', $user->id)
+                ->with('plaza', 'user')
+                ->get();
+        }
+    } else {
+        // Si el usuario tiene otro rol o no está autenticado, devolver vacío o algún manejo de error
+        $reservations = collect();
     }
+
+    return view('livewire.reservas.index', compact('reservations', 'parkings'));
+}
+
     public function store(Request $request)
     {
         // Validación de los datos

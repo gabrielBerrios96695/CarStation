@@ -13,16 +13,24 @@ class PackagesController extends Controller
 {
     public function index(Request $request)
 {
-    $userId = Auth::id();
+    $user = Auth::user(); // Obtener el usuario autenticado
 
-    $query = Package::whereHas('parking', function ($query) use ($userId) {
-        $query->where('created_by', $userId);
-    });
+    // Crear la consulta base para los paquetes
+    $query = Package::query();
+
+    if ($user->role != 1) {
+        // Si el rol no es 1 (es decir, es 2 o 3), solo mostrar los paquetes asociados a los parqueos creados por el usuario
+        $userId = $user->id;
+        $query->whereHas('parking', function ($query) use ($userId) {
+            $query->where('created_by', $userId);
+        });
+    }
+
     if ($request->has('status') && in_array($request->status, ['0', '1'])) {
         // Filtrar por el estado seleccionado (0 = Inactivo, 1 = Activo)
         $query->where('status', $request->status);
     } else {
-        // Si no se pasa un estado, por defecto mostrar Activo (1)
+        // Si no se pasa un estado, por defecto mostrar solo los paquetes activos (1)
         $query->where('status', 1);
     }
 
@@ -32,6 +40,7 @@ class PackagesController extends Controller
     // Pasar los paquetes a la vista
     return view('livewire.packages.index', compact('packages'));
 }
+
 
 
 

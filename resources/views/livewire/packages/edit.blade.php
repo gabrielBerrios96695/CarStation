@@ -35,7 +35,7 @@
 
                 <div class="form-group">
                     <label for="name">Nombre del Paquete</label>
-                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $package->name) }}" required>
+                    <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $package->name) }}" required readonly>
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}

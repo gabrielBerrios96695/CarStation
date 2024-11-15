@@ -24,9 +24,11 @@
             <a href="{{ route('packages.export') }}" class="btn btn-success mr-2">
                 <i class="fas fa-file-excel"></i> Excel
             </a>
+            @if(auth()->user()->role != 1) 
             <a href="{{ route('packages.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Crear Paquete
             </a>
+            @endif
         </div>
     </div>
 

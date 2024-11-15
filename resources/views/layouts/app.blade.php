@@ -59,6 +59,45 @@
                     <i class="fas fa-map-marker-alt"></i> <!-- Cambiado a icono de marcador en mapa -->
                     <span class="mx-3">Buscar Garaje</span>
                 </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reservas.index') }}">
+                    <i class="fas fa-parking"></i> <!-- Icono de parqueo -->
+                    <span class="mx-3">Reservas</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('purchases.index') }}">
+                    <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
+                    <span class="mx-3">Compras</span>
+                </a>
+                @elseif (auth()->user()->role == 2) 
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="mx-3">Dashboard</span>
+                </a>
+                
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.index') }}">
+                    <i class="fas fa-parking"></i> <!-- Cambiado a icono de parking -->
+                    <span class="mx-3">Garajes</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.maps') }}">
+                    <i class="fas fa-map-marker-alt"></i> <!-- Cambiado a icono de marcador en mapa -->
+                    <span class="mx-3">Buscar Garaje</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('packages.index') }}">
+                    <i class="fas fa-box"></i> <!-- Cambiado a icono de paquete -->
+                    <span class="mx-3">Paquetes</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reservas.index') }}">
+                    <i class="fas fa-parking"></i> <!-- Icono de parqueo -->
+                    <span class="mx-3">Reservas</span>
+                </a>
+
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('purchases.index') }}">
+                    <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
+                    <span class="mx-3">Ventas</span>
+                </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations') }}">
+                    <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
+                    <span class="mx-3">Reporte de Reservas</span>
+                </a>
                 @else
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>
@@ -89,16 +128,11 @@
                     <i class="fas fa-shopping-cart"></i> <!-- Cambiado a icono de carrito de compras -->
                     <span class="mx-3">Ventas</span>
                 </a>
-                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations2') }}">
-                    <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
-                    <span class="mx-3">Reporte de Reservas</span>
-                </a>
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('reports.clientReservations') }}">
                     <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
                     <span class="mx-3">Reporte de Reservas</span>
                 </a>
                 
-
                 @endif
 
                    

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
+use App\Models\Parking;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -9,15 +10,37 @@ use Illuminate\Support\Facades\Auth;
 
 class PurchaseController extends Controller
 {
-    // Método para mostrar la lista de compras
     public function index()
-    {
-        // Recuperar todas las compras junto con el usuario y el paquete asociado
-        $purchases = Purchase::with(['user', 'package'])->get();
+{
+    // Obtener el usuario autenticado
+    $user = auth()->user();
 
-        // Pasar las compras a la vista
-        return view('livewire.purchases.index', compact('purchases'));
+    // Si el rol del usuario es 3, filtrar solo las compras relacionadas a él
+    if ($user->role == 3) {
+        $purchases = Purchase::with(['user', 'package'])
+                             ->where('user_id', $user->id) // Filtrar por el ID del usuario
+                             ->get();
     }
+    // Si el rol del usuario es 2, filtrar solo las compras relacionadas a los parqueos registrados a su nombre
+    elseif ($user->role == 2) {
+        // Obtener los parqueos registrados a nombre del usuario
+        $parkings = Parking::where('user_id', $user->id)->pluck('id'); // Obtener los IDs de los parqueos
+
+        $purchases = Purchase::with(['user', 'package'])
+                             ->whereIn('package_id', function ($query) use ($parkings) {
+                                 $query->select('id')->from('packages')->whereIn('parking_id', $parkings);
+                             })
+                             ->get();
+    }
+    // Si el usuario tiene otro rol, obtener todas las compras
+    else {
+        $purchases = Purchase::with(['user', 'package'])->get();
+    }
+
+    // Pasar las compras a la vista
+    return view('livewire.purchases.index', compact('purchases'));
+}
+
     public function create()
     {
         $packages = Package::all(); // Cargar todos los paquetes
