@@ -16,46 +16,34 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class ParkingController extends Controller
 {
-    /**
-     * Mostrar una lista de los estacionamientos.
-     *
-     * @param Request $request
-     * @return \Illuminate\View\View
-     */
-    // app/Http/Controllers/ParkingController.php
     public function index()
 {
-    $sortField = request()->get('sort_field', 'id');
-    $sortDirection = request()->get('sort_direction', 'asc');
-
     // Obtener el usuario autenticado
     $user = auth()->user();
-    $parkingsQuery = Parking::withCount(['plazas' => function ($query) {
-        $query->where('status', 1); // Solo contar plazas con status igual a 1
-    }]);
 
+    // Consulta base de estacionamientos con conteo de plazas activas y relación con usuario
+    $parkingsQuery = Parking::with(['user']) // Cargamos la relación con el usuario
+        ->withCount(['plazas' => function ($query) {
+            $query->where('status', 1); // Solo contar plazas con status igual a 1
+        }]);
+
+    // Filtrar por rol
     if ($user->role == 1) { 
         // Si el usuario es administrador, mostrar todos los parqueos
-        $parkings = $parkingsQuery->orderBy($sortField, $sortDirection)->get();
+        $parkings = $parkingsQuery->get();
     } elseif ($user->role == 2) {
         // Si el usuario es vendedor, mostrar solo sus parqueos
-        $parkings = $parkingsQuery->where('user_id', $user->id)
-                                  ->orderBy($sortField, $sortDirection)
-                                  ->get();
+        $parkings = $parkingsQuery->where('user_id', $user->id)->get();
     } else {
         // Si el usuario tiene otro rol, devolver un array vacío o manejarlo como prefieras
         $parkings = collect();
     }
 
+    // Retornar la vista con los datos
     return view('livewire.parkings.index', [
         'parkings' => $parkings,
-        'sortField' => $sortField,
-        'sortDirection' => $sortDirection,
     ]);
 }
-
-
-
    
     public function create()
     {
@@ -63,13 +51,27 @@ class ParkingController extends Controller
     }
 
     public function maps()
-    {
+{
+    $user = auth()->user(); // Obtener el usuario autenticado
+
+    // Verificar el rol del usuario
+    if ($user->role == 2) {
+        // Si es vendedor (role = 2), mostrar solo sus parqueos
+        $parkings = Parking::withCount(['plazas' => function ($query) {
+            $query->where('status', 1); // Contar solo plazas activas
+        }])
+        ->where('user_id', $user->id) // Filtrar por el usuario autenticado
+        ->get();
+    } else {
+        // Si es administrador u otro rol, mostrar todos los parqueos
         $parkings = Parking::withCount(['plazas' => function ($query) {
             $query->where('status', 1); // Contar solo plazas activas
         }])->get();
-
-        return view('livewire.parkings.maps', compact('parkings'));
     }
+
+    return view('livewire.parkings.maps', compact('parkings'));
+}
+
 
  
     public function edit(Parking $parking)
@@ -286,6 +288,7 @@ class ParkingController extends Controller
 {
     // Obtener el parqueo por ID
     $parking = Parking::findOrFail($id);
+    
     // Obtener la fecha de reserva, usando la fecha actual como predeterminada
     $reservationDate = $request->input('reservation_date', date('Y-m-d'));
 
@@ -293,10 +296,12 @@ class ParkingController extends Controller
     $user = auth()->user();
 
     // Obtener las compras realizadas por el usuario autenticado que correspondan al parqueo seleccionado
+    // y que tengan horas mayores a 0
     $purchasedPackages = Purchase::where('user_id', $user->id)
         ->whereHas('package', function ($query) use ($parking) {
             $query->where('parking_id', $parking->id); // Filtrar por el ID del parqueo
         })
+        ->where('hours', '>', 0) // Filtrar las compras con más de 0 horas
         ->get();
 
     // Obtener las plazas disponibles para el parqueo seleccionado
@@ -331,14 +336,6 @@ class ParkingController extends Controller
     return view('livewire.parkings.view', compact('parking', 'plazas', 'available_hours_by_plaza', 'reservationDate', 'purchasedPackages'));
 }
 
-
-
-
-
-
-
-
-   
 
     // Método para almacenar una nueva reserva
     public function storeReservation(Request $request)

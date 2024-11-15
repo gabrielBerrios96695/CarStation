@@ -54,7 +54,7 @@
             <p><strong>Gracias:</strong> {{ $user->name }}</p>
             <p><strong>Número de Plaza:</strong> {{ $plaza->id }}</p> <!-- Asegúrate de que el campo correcto se llame 'number' -->
             <p><strong>Fecha de Reserva:</strong> {{ $reservation->reservation_date }}</p>
-            <p><strong>Hora de Inicio:</strong> {{ $reservation->start_time }}</p>
+            <p><strong>Hora de Inicio:</strong> {{ $reservation->start_time }}:00</p>
             <p><strong>Hora de Fin:</strong> {{ $reservation->end_time }}</p>
         </div>
         <p class="footer">Gracias por reservar con nosotros.</p>

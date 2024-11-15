@@ -39,7 +39,7 @@
                             <th scope="row">{{ $purchase->id }}</th>
                             <td>{{ $purchase->user->name }}</td>
                             <td>{{ $purchase->package->name }}</td>
-                            <td>{{ $purchase->package->hours }}</td>
+                            <td>{{ $purchase->hours }}</td>
                             <td>
                                 <span class="badge {{ $purchase->status == 1 ? 'badge-warning' : ($purchase->status == 2 ? 'badge-success' : 'badge-danger') }}">
                                     {{ $purchase->status == 1 ? 'Pendiente' : ($purchase->status == 2 ? 'Completa' : 'Cancelada') }}

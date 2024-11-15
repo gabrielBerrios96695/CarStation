@@ -15,9 +15,11 @@ use App\Models\Plaza;
             <a href="{{ route('parkings.export') }}" class="btn btn-success mr-2">
                 <i class="fas fa-file-excel"></i> Excel
             </a>
+            @if(auth()->user()->role !== 1)
             <a href="{{ route('parkings.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Agregar Nuevo Estacionamiento
             </a>
+            @endif
         </div>
     </div>
 
@@ -29,35 +31,19 @@ use App\Models\Plaza;
             <table class="table table-striped table-hover">
                 <thead class="thead bg-blue-300">
                     <tr>
-                        <th scope="col">
-                            <a href="{{ route('parkings.index', ['sort_field' => 'id', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
-                                #
-                                @if($sortField === 'id')
-                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                                @endif
-                            </a>
-                        </th>
-                        <th scope="col">
-                            <a href="{{ route('parkings.index', ['sort_field' => 'name', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
-                                Nombre
-                                @if($sortField === 'name')
-                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                                @endif
-                            </a>
-                        </th>
+                        <th scope="col">Nro</th>
+                        <th scope="col">Nombre</th>
+                        @if(auth()->user()->role !== 2)
+                            <th scope="col">Dueño</th>
+                        @endif
                         <th scope="col">Latitud</th>
                         <th scope="col">Longitud</th>
-                        <th scope="col">
-                            <a href="{{ route('parkings.index', ['sort_field' => 'number_of_spaces', 'sort_direction' => $sortDirection === 'asc' ? 'desc' : 'asc']) }}">
-                                Plazas
-                                @if($sortField === 'number_of_spaces')
-                                    <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
-                                @endif
-                            </a>
-                        </th>
+                        <th scope="col">Plazas</th>
                         <th scope="col">Horas de Apertura y Cierre</th>
                         <th scope="col">Estado</th>
-                        <th scope="col">Acciones</th>
+                        @if(auth()->user()->role !== 1)
+                            <th scope="col">Acciones</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -65,6 +51,9 @@ use App\Models\Plaza;
                         <tr>
                             <th scope="row">{{ $parking->id }}</th>
                             <td>{{ $parking->name }}</td>
+                            @if(auth()->user()->role !== 2)
+                                <td>{{ $parking->user ? $parking->user->name : 'Sin dueño' }}</td>
+                            @endif
                             <td>{{ $parking->latitude }}</td>
                             <td>{{ $parking->longitude }}</td>
                             <td>{{ $parking->plazas_count }}</td>
@@ -74,14 +63,16 @@ use App\Models\Plaza;
                                     {{ $parking->status ? 'Activo' : 'Inactivo' }}
                                 </span>
                             </td>
-                            <td>
-                                <a href="{{ route('parkings.edit', $parking->id) }}" class="btn btn-secondary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#toggleStatusModal" data-id="{{ $parking->id }}" data-status="{{ $parking->status }}">
-                                    <i class="fas fa-toggle-on"></i>
-                                </button>
-                            </td>
+                            @if(auth()->user()->role !== 1)
+                                <td>
+                                    <a href="{{ route('parkings.edit', $parking->id) }}" class="btn btn-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#toggleStatusModal" data-id="{{ $parking->id }}" data-status="{{ $parking->status }}">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

@@ -3,7 +3,11 @@
 @section('content')
 <div class="container">
     <h1 class="my-4">{{ $parking->name }}</h1>
-
+    @if(session('ticket_url'))
+    <div class="alert alert-info">
+        <a href="{{ session('ticket_url') }}" class="btn btn-primary" target="_blank">Descargar Ticket</a>
+    </div>
+@endif
     <!-- Formulario para seleccionar la fecha de reserva -->
     <form method="GET" action="{{ route('parkings.view', ['id' => $parking->id]) }}" class="mb-4">
         <label for="reservation_date">Selecciona una fecha:</label>
@@ -56,11 +60,18 @@
                                     <label for="package_id">Selecciona un Paquete:</label>
                                     <select name="package_id" id="package_id{{ $plaza->id }}" class="form-control">
                                         <option value="">Seleccione...</option>
-                                        @foreach($purchasedPackages as $purchase)
-                                            <option value="{{ $purchase->package->id }}">{{ $purchase->package->name }} - {{ $purchase->hours }} horas</option>
-                                        @endforeach
+                                        @if($purchasedPackages->isEmpty())
+                                            <option value="" disabled>Sin paquetes disponibles. Por favor, compre otro paquete.</option>
+                                        @else
+                                            @foreach($purchasedPackages as $purchase)
+                                                <option value="{{ $purchase->package->id }}">
+                                                    {{ $purchase->package->name }} - {{ $purchase->hours }} horas
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
+
 
                                 <div class="form-group">
                                     <label for="start_time">Hora de Inicio:</label>

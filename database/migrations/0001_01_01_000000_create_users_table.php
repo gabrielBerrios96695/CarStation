@@ -14,18 +14,24 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('first_lastname'); 
+            $table->string('second_lastname')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->timestamp('password_changed_at')->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->tinyInteger('role')->default(3);
-            $table->string('phone_number')->nullable();  // Número de teléfono, opcional
-            $table->string('address')->nullable();       // Dirección, opcional
-            $table->string('ci')->nullable();            // Documento de identidad, opcional
+            $table->tinyInteger('role')->default(3); 
+            $table->string('phone_number');
+            $table->string('address')->nullable();
+            $table->string('ci')->nullable();
+            $table->string('ci_image')->nullable(); 
+            $table->string('home_location')->nullable();
+            $table->boolean('verified')->default(false); 
             $table->rememberToken();
             $table->timestamps();
         });
+        
         
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

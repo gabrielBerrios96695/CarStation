@@ -15,10 +15,12 @@
             <a href="{{ route('users.create') }}" class="btn btn-primary">
                 <i class="fas fa-user-plus"></i> Registrar Nuevo Usuario
             </a>
-            <a href="{{ route('users.createAdmin') }}" class="btn btn-info ml-2">
-                <i class="fas fa-user-shield"></i> Registrar Administrador
-            </a>
         </div>
+    </div>
+
+    <!-- Buscador -->
+    <div class="mb-3">
+        <input type="text" id="search" class="form-control" placeholder="Buscar por nombre completo">
     </div>
 
     <!-- Tabla de usuarios -->
@@ -33,80 +35,85 @@
                         <th scope="col">#</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">Correo</th>
+                        <th scope="col">Teléfono</th>
                         <th scope="col">Rol</th>
-                        <th scope="col">Estado</th>
                         <th scope="col">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                        <tr>
-                            <th scope="row">{{ $user->id }}</th>
-                            <td>{{ $user->name }}</td>
+                <tbody id="userTable">
+                    @foreach ($users as $index => $user)
+                        <tr class="userRow">
+                            <!-- Muestra el índice según la paginación -->
+                            <th scope="row">{{ $users->firstItem() + $index }}</th>
+                            <td>{{ $user->name }} {{ $user->first_lastname }} {{ $user->second_lastname }}</td>
                             <td>{{ $user->email }}</td>
-                            <td>{{ $user->role == 1 ? 'Administrador' : ($user->role == 2 ? 'Usuario' : 'Cliente') }}</td>
+                            <td>{{ $user->phone_number }}</td>
                             <td>
-                                <span class="badge {{ $user->status ? 'badge-success' : 'badge-secondary' }}">
-                                    {{ $user->status ? 'Activo' : 'Eliminado' }}
-                                </span>
+                                @if ($user->role == 1)
+                                    Administrador
+                                @elseif ($user->role == 2)
+                                    Dueño de Parqueo
+                                @elseif ($user->role == 3)
+                                    Cliente
+                                @else
+                                    Desconocido
+                                @endif
                             </td>
+
                             <td>
                                 <a href="{{ route('users.edit', $user->id) }}" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
-                                @if ($user->status != 0)
-                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-id="{{ $user->id }}">
-                                        <i class="fas fa-trash-alt"></i> Eliminar
-                                    </button>
-                                @else
-                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#restoreModal" data-id="{{ $user->id }}">
-                                        <i class="fas fa-undo"></i> Restaurar
-                                    </button>
-                                @endif
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        onclick="confirmDelete('{{ $user->id }}', '{{ $user->name }} {{ $user->first_lastname }} {{ $user->second_lastname }}')">
+                                    <i class="fas fa-trash-alt"></i> Eliminar
+                                </button>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-<!-- Modal para cambiar el estado -->
-<div class="modal fade" id="toggleStatusModal" tabindex="-1" aria-labelledby="toggleStatusModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="toggleStatusModalLabel">Confirmar Cambio de Estado</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                ¿Estás seguro de que deseas cambiar el estado de este usuario?
-            </div>
-            <div class="modal-footer">
-                <form id="toggleStatusForm" method="POST" class="d-inline">
-                    @csrf
-                    @method('PUT')
-                    <button type="submit" class="btn btn-primary">Confirmar</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
 
-@push('scripts')
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $('#toggleStatusModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var userId = button.data('id');
-            var action = '{{ route("users.toggleStatus", ":id") }}';
-            action = action.replace(':id', userId);
-            $('#toggleStatusForm').attr('action', action);
+            </table>
+            {{ $users->links() }} <!-- Paginación -->
+        </div>
+    </div>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(userId, userName) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `¿Deseas eliminar al usuario: ${userName}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si confirma la eliminación, se redirige al método destroy con el ID del usuario
+                window.location.href = `/users/${userId}/destroy`;
+            }
         });
-    </script>
-@endpush
+    }
+
+    // Filtro dinámico
+    document.getElementById('search').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('.userRow');
+        
+        rows.forEach(row => {
+            let name = row.querySelector('td').textContent.toLowerCase();
+            if (name.indexOf(filter) > -1) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+@endsection

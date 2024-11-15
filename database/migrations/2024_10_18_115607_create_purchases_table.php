@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('package_id')->references('id')->on('packages')->onDelete('cascade');
             $table->tinyInteger('status')->default(2); 
             $table->decimal('amount', 10, 2);
+            $table->unsignedInteger('hours_purchases');
             $table->unsignedInteger('hours'); // Nuevo campo para almacenar las horas del paquete comprado
             $table->timestamps();
         });

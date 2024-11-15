@@ -6,114 +6,150 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Mostrar una lista de los usuarios.
-     *
-     * @param Request $request
-     * @return \Illuminate\View\View
-     */
     public function index(Request $request)
     {
-        $sortField = $request->input('sort', 'id'); // Campo de ordenamiento, por defecto 'id'
-        $sortDirection = $request->input('direction', 'asc'); // Dirección de ordenamiento, por defecto 'asc'
+        // Obtener el ID del usuario autenticado
+        $authUserId = auth()->id();
 
-        // Asegúrate de que solo permita ordenar por estos campos para evitar inyecciones SQL
-        $allowedSorts = ['id', 'name', 'email'];
-        if (!in_array($sortField, $allowedSorts)) {
-            $sortField = 'id';
-        }
+        // Filtrar usuarios con status 1 y excluir al usuario autenticado
+        $users = User::where('status', 1)
+                    ->where('id', '!=', $authUserId)
+                    ->paginate(5);
 
-        $users = User::orderBy($sortField, $sortDirection)->paginate(10);
-
-        return view('livewire/users.index', compact('users', 'sortField', 'sortDirection'));
+        return view('livewire.users.index', compact('users'));
     }
 
-    /**
-     * Mostrar el formulario para crear un nuevo usuario.
-     *
-     * @return \Illuminate\View\View
-     */
+
     public function create()
     {
         return view('livewire/users.create');
     }
 
-    /**
-     * Mostrar el formulario para editar un usuario existente.
-     *
-     * @param User $user
-     * @return \Illuminate\View\View
-     */
     public function edit(User $user)
     {
         return view('livewire/users.edit', compact('user'));
     }
 
-    /**
-     * Actualizar un usuario existente.
-     *
-     * @param Request $request
-     * @param User $user
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request, User $user)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'role' => 'required|integer',
-        ]);
+{
+    // Validación de los datos enviados
+    $request->validate([
+        'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u', // Nombre con letras y espacios
+        'first_lastname' => 'required|string|regex:/^[\pL]+$/u', // Apellido Paterno
+        'second_lastname' => 'nullable|string|regex:/^[\pL]+$/u', // Apellido Materno
+        'email' => 'required|email|max:255', // Correo único
+        'phone_number' => 'required|digits_between:1,10', // Teléfono
+        'address' => 'nullable|string|max:255', // Dirección opcional
+        'role' => 'required|in:1,2,3', // Roles válidos
+        'ci' => 'required|digits_between:1,12', // CI (Cédula de Identidad)
+        'ci_image' => 'nullable|file|mimes:jpeg,png,jpg,gif', // Imagen de CI (opcional)
+    ]);
 
+    // Actualización de los datos básicos
+    $user->update([
+        'name' => $request->name,
+        'first_lastname' => $request->first_lastname,
+        'second_lastname' => $request->second_lastname,
+        'email' => $request->email,
+        'phone_number' => $request->phone_number,
+        'ci' => $request->ci,
+        'role' => $request->role,
+    ]);
+
+    // Si el rol es Dueño de Parqueo (rol 2), actualizar dirección e imagen del CI
+    if ($request->role == 2) {
         $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
+            'address' => $request->address, // Dirección
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
+        // Si hay una imagen de CI, guardarla
+        if ($request->hasFile('ci_image')) {
+            // Eliminar la imagen anterior si existe
+            if ($user->ci_image) {
+                Storage::delete('public/ci_images/' . $user->ci_image);
+            }
+
+            // Subir la nueva imagen
+            $imagePath = $request->file('ci_image')->store('ci_images', 'public');
+            $user->update(['ci_image' => basename($imagePath)]);
+        }
     }
 
+    return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente');
+}
 
-    /**
-     * Marcar un usuario como eliminado (cambiar el estado a 0).
-     *
-     * @param User $user
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy(User $user)
+
+    public function destroy($id)
     {
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado permanentemente.');
+        // Obtener el usuario por su ID
+        $user = User::findOrFail($id);
+
+        // Cambiar el status a 0 (deshabilitado)
+        $user->status = 0; // 0 para deshabilitado
+        $user->save();
+
+        // Redirigir con un mensaje de éxito
+        return redirect()->route('users.index')->with('success', 'El usuario ha sido deshabilitado correctamente.');
     }
 
-    /**
-     * Almacenar un nuevo usuario.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+public function store(Request $request)
+{
+    // Validaciones
+    $request->validate([
+        'name' => 'required|string|max:255|regex:/^[\pL]+(\s[\pL]+)*$/u', // Solo letras, espacios y acentos
+        'first_lastname' => 'required|string|regex:/^[\pL]+$/u', // Solo letras y acentos, sin espacios
+        'second_lastname' => 'nullable|string|regex:/^[\pL]+$/u', // Solo letras, Sin espacios y acentos
+        'email' => 'required|string|email|max:255|unique:users,email',
+        'phone_number' => 'required|digits_between:1,10',
+        'address' => 'nullable|string|max:255',
+        'role' => 'required|in:1,2,3', // Validación de los roles
+        'ci' => 'required|digits_between:1,12', // CI de 12 dígitos
+        'ci_image' => 'nullable|file|mimes:jpeg,png,jpg,gif', // Imagen del CI, opcional
+        'password' => 'required|string|min:8|confirmed',
+    ], [
+        'name.regex' => 'El nombre solo puede contener letras y un único espacio.',
+        'first_lastname.regex' => 'El apellido paterno solo puede contener letras ',
+        'second_lastname.regex' => 'El apellido materno solo puede contener letras ',
+        'phone_number.digits' => 'El número de teléfono debe tener 10 dígitos como maximo.',
+        'ci.digits' => 'El número de CI debe tener 12 dígitos como maximo.',
+        'ci_image.mimes' => 'La imagen del CI debe ser un archivo de tipo jpeg, png, jpg o gif.',
+        'ci_image.max' => 'La imagen del CI no debe superar 1MB.',
+    ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'status' => 1, // Por defecto, el usuario está activo
-        ]);
-
-        return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
+    // Procesar la imagen del CI si el usuario es "Dueño de Parqueo" (role 2)
+    $ci_image_path = null;
+    if ($request->role == 2 && $request->hasFile('ci_image')) {
+        // Renombrar la imagen del CI con el número de CI
+        $ci_image_path = $request->file('ci_image')->storeAs(
+            'public/ci_images', $request->ci . '.' . $request->file('ci_image')->getClientOriginalExtension()
+        );
     }
+
+    // Crear el nuevo usuario
+    User::create([
+        'name' => $request->name,
+        'first_lastname' => $request->first_lastname,
+        'second_lastname' => $request->second_lastname,
+        'email' => $request->email,
+        'phone_number' => $request->phone_number,
+        'address' => $request->address,
+        'role' => $request->role,
+        'ci' => $request->ci,
+        'ci_image' => $ci_image_path, // Guardar la ruta de la imagen del CI si se subió
+        'password' => Hash::make($request->password),
+        'status' => 1, // Por defecto, el usuario está activo
+    ]);
+
+    return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
+}
+
     public function createAdmin()
     {
         return view('livewire.users.createAdmin'); // Asegúrate de tener esta vista
@@ -240,26 +276,5 @@ class UserController extends Controller
     return response()->download($temp_file, $fileName)->deleteFileAfterSend(true);
 }
 
-
-
-    /**
-     * Obtener el nombre del rol basado en el código.
-     *
-     * @param int $role
-     * @return string
-     */
-    private function getRoleName($role)
-    {
-        switch ($role) {
-            case 1:
-                return 'Administrador';
-            case 2:
-                return 'Usuario';
-            case 3:
-                return 'Cliente';
-            default:
-                return 'No definido';
-        }
-    }
 
 }

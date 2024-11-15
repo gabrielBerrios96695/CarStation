@@ -30,6 +30,12 @@ class Parking extends Model
     {
         return $this->hasMany(Package::class, 'parking_id');
     }
+    // App\Models\Parking.php
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
 
 }

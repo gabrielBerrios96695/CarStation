@@ -14,7 +14,8 @@
 <!-- Bootstrap CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Bootstrap JS y dependencias -->
+<script src="{{ mix('js/app.js') }}"></script> <!-- Importar JS compilado -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- CDN de SweetAlert2 -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -120,7 +121,7 @@
                     </div>
                     <div x-data="{ open: false }" @click.away="open = false" class="relative user-menu">
                         <button @click="open = !open" class="px-4 py-2 text-sm hover:bg-gray-200">
-                            Opciones
+                            {{ auth()->user()->name }}
                         </button>
                         <div x-show="open" class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10">
                             <a class="block px-4 py-2 text-sm hover:bg-gray-200">Perfil</a>
@@ -138,14 +139,25 @@
                 <main class="main-content flex-1 overflow-x-hidden overflow-y-auto">
                     <div class="container mx-auto px-6 py-8">
                     @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @elseif (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '{{ session('success') }}',
+                            showConfirmButton: true,
+                            timer: 5000 
+                        });
+                    </script>
+            @elseif (session('error'))
+            <script>
+                Swal.fire({
+                    title: 'Error!',
+                    text: '{{ session('error') }}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                </script>
+            @endif
                         @yield('content')
                     </div>
                 </main>

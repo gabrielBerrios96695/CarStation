@@ -62,6 +62,7 @@ class PurchaseController extends Controller
         $purchase->amount = $validatedData['amount'];
         $purchase->description = $validatedData['description'];
         $purchase->hours = $request->input('hours'); // Asigna las horas compradas
+        $purchase->hours_purchases = $request->input('hours');
         $purchase->save();
 
         return redirect()->route('purchases.index')->with('success', 'Compra registrada correctamente.');

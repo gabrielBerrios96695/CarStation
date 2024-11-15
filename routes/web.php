@@ -89,7 +89,7 @@ Route::get('/users/create', [UserController::class, 'create'])->name('users.crea
 Route::post('/users', [UserController::class, 'store'])->name('users.store');
 Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::get('/users/{id}/destroy', [UserController::class, 'destroy'])->name('users.destroy');
 Route::put('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
 Route::get('/users/export', [UserController::class, 'exportToExcel'])->name('users.export');
 Route::get('/users/create-admin', [UserController::class, 'createAdmin'])->name('users.createAdmin');
