@@ -5,11 +5,29 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ParkingController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PasswordChangeController;
-
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CarController;
+use App\Http\Controllers\ReportPurchasesController;
 
-// Agrupando las rutas bajo autenticación
+
+
+// Ruta para mostrar el reporte
+Route::get('report/purchases', [ReportPurchasesController::class, 'showReport'])->name('report.purchases.report');
+
+// Ruta para generar el PDF
+Route::get('report/purchases/generate-pdf', [ReportPurchasesController::class, 'generatePDF'])->name('report.purchases.generatePDF');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cars', [CarController::class, 'index'])->name('cars.index');
+    Route::get('/cars/create', [CarController::class, 'create'])->name('cars.create');
+    Route::post('/cars', [CarController::class, 'store'])->name('cars.store');
+    Route::get('/cars/{car}', [CarController::class, 'show'])->name('cars.show');
+    Route::get('/cars/{car}/edit', [CarController::class, 'edit'])->name('cars.edit');
+    Route::put('/cars/{car}', [CarController::class, 'update'])->name('cars.update');
+    Route::delete('/cars/{car}', [CarController::class, 'destroy'])->name('cars.destroy');
+});
+
 Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar la lista de compras
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');

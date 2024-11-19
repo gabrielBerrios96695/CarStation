@@ -55,6 +55,10 @@
                     <i class="fas fa-tachometer-alt"></i>
                     <span class="mx-3">Dashboard</span>
                 </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('cars.index') }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="mx-3">Autos</span>
+                </a>
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('parkings.maps') }}">
                     <i class="fas fa-map-marker-alt"></i> <!-- Cambiado a icono de marcador en mapa -->
                     <span class="mx-3">Buscar Garaje</span>
@@ -98,6 +102,11 @@
                     <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
                     <span class="mx-3">Reporte de Reservas</span>
                 </a>
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('report.purchases.report') }}">
+                    <i class="fas fa-dollar-sign"></i> <!-- Icono de signo de dólar para el reporte de ganancias -->
+                    <span class="mx-3">Reporte de Ganancias</span>
+                </a>
+
                 @else
                 <a class="flex items-center mt-4 py-2 px-6" href="{{ route('dashboard') }}">
                     <i class="fas fa-tachometer-alt"></i>
@@ -132,7 +141,11 @@
                     <i class="fas fa-calendar-check"></i> <!-- Icono de calendario con check para reportes de reservas -->
                     <span class="mx-3">Reporte de Reservas</span>
                 </a>
-                
+                <a class="flex items-center mt-4 py-2 px-6" href="{{ route('report.purchases.report') }}">
+                    <i class="fas fa-dollar-sign"></i> <!-- Icono de signo de dólar para el reporte de ganancias -->
+                    <span class="mx-3">Reporte de Ganancias</span>
+                </a>
+
                 @endif
 
                    

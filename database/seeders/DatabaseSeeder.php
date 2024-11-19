@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ParkingSeeder::class,
             PlazaSeeder::class,
-            PlazaReservaSeeder::class,
         ]);
     }
 }

@@ -71,7 +71,15 @@
                                         @endif
                                     </select>
                                 </div>
-
+                                <div class="form-group">
+                                    <label for="car_id">Selecciona tu vehículo:</label>
+                                    <select name="car_id" id="car_id" class="form-control" required>
+                                        <option value="">Seleccione...</option>
+                                        @foreach($cars as $car)
+                                            <option value="{{ $car->id }}">{{ $car->model }} - {{ $car->license_plate }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
                                 <div class="form-group">
                                     <label for="start_time">Hora de Inicio:</label>

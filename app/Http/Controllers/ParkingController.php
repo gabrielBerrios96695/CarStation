@@ -7,6 +7,7 @@ use App\Models\Plaza;
 use App\Models\PlazaHour;
 use App\Models\PlazaReserva;
 use App\Models\Purchase;
+use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -295,6 +296,9 @@ class ParkingController extends Controller
     // Obtener el usuario autenticado
     $user = auth()->user();
 
+    // Obtener los autos registrados por el usuario autenticado
+    $cars = $user->cars()->where('status', 1)->get();
+
     // Obtener las compras realizadas por el usuario autenticado que correspondan al parqueo seleccionado
     // y que tengan horas mayores a 0
     $purchasedPackages = Purchase::where('user_id', $user->id)
@@ -333,7 +337,7 @@ class ParkingController extends Controller
         $available_hours_by_plaza[$plaza->id] = array_values($availableHours);
     }
 
-    return view('livewire.parkings.view', compact('parking', 'plazas', 'available_hours_by_plaza', 'reservationDate', 'purchasedPackages'));
+    return view('livewire.parkings.view', compact('parking', 'plazas', 'cars','available_hours_by_plaza', 'reservationDate', 'purchasedPackages'));
 }
 
 

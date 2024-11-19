@@ -40,6 +40,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Plaza</th>
                             <th scope="col">Usuario</th>
+                            <th scope="col">Vehículo</th>
                             <th scope="col">Fecha de Reserva</th>
                             <th scope="col">Hora de Inicio</th>
                             <th scope="col">Hora de Fin</th>
@@ -51,6 +52,13 @@
                                 <th scope="row">{{ $reservation->id }}</th>
                                 <td>{{ $reservation->plaza->id }}</td>
                                 <td>{{ $reservation->user->name }}</td>
+                                <td>
+                                    @if($reservation->car)
+                                        {{ $reservation->car->model }} - {{ $reservation->car->license_plate }}
+                                    @else
+                                        Sin vehículo asignado
+                                    @endif
+                                </td>
                                 <td>{{ $reservation->reservation_date }}</td>
                                 <td>{{ $reservation->start_time }}:00</td>
                                 <td>{{ $reservation->end_time }}</td>

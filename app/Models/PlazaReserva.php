@@ -9,7 +9,7 @@ class PlazaReserva extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['plaza_id','user_id','reservation_date', 'start_time', 'end_time']; // Asegúrate de incluir 'reservation_date' si lo necesitas
+    protected $fillable = ['plaza_id','user_id','car_id','reservation_date', 'start_time', 'end_time']; // Asegúrate de incluir 'reservation_date' si lo necesitas
 
     public function plaza()
     {
@@ -18,5 +18,9 @@ class PlazaReserva extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function car()
+    {
+        return $this->belongsTo(Car::class);
     }
 }

@@ -24,7 +24,7 @@ class ReservationController extends Controller
         if ($parkingId) {
             $reservations = PlazaReserva::whereHas('plaza', function ($query) use ($parkingId) {
                 $query->where('parking_id', $parkingId);
-            })->with('plaza', 'user')->get();
+            })->with('plaza', 'user','car')->get();
         } else {
             $reservations = PlazaReserva::with('plaza', 'user')->get();
         }
@@ -36,10 +36,10 @@ class ReservationController extends Controller
         if ($parkingId) {
             $reservations = PlazaReserva::whereHas('plaza', function ($query) use ($parkingId, $parkingsForUser) {
                 $query->where('parking_id', $parkingId)->whereIn('plaza_id', $parkingsForUser);
-            })->with('plaza', 'user')->get();
+            })->with('plaza', 'user','car')->get();
         } else {
             $reservations = PlazaReserva::whereIn('plaza_id', $parkingsForUser)
-                ->with('plaza', 'user')
+                ->with('plaza', 'user','car')
                 ->get();
         }
     } elseif ($user->role == 3) {
@@ -49,11 +49,11 @@ class ReservationController extends Controller
                 ->whereHas('plaza', function ($query) use ($parkingId) {
                     $query->where('parking_id', $parkingId);
                 })
-                ->with('plaza', 'user')
+                ->with('plaza', 'user','car')
                 ->get();
         } else {
             $reservations = PlazaReserva::where('user_id', $user->id)
-                ->with('plaza', 'user')
+                ->with('plaza', 'user','car')
                 ->get();
         }
     } else {
@@ -66,12 +66,13 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        // Validación de los datos
+
         $request->validate([
             'plaza_id' => 'required|exists:plazas,id',
             'reservation_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'car_id' => 'required|exists:cars,id'
         ]);
     
         // Verificar si hay reservas en el rango solicitado
@@ -126,6 +127,7 @@ class ReservationController extends Controller
         $reservation = PlazaReserva::create([
             'plaza_id' => $request->input('plaza_id'),
             'user_id' => $userId,
+            'car_id' => $request->input('car_id'),
             'reservation_date' => $request->input('reservation_date'),
             'start_time' => $request->input('start_time'),
             'end_time' => date('H:i:s', strtotime($request->input('end_time')) - 1),
